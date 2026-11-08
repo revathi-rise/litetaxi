@@ -102,5 +102,10 @@ export const adminApi = {
     params.append('pageSize', '25');
     return fetchWithAuth(`/admin/bookings?${params.toString()}`);
   },
+  cancelBooking: (id: string, reason?: string) =>
+    fetchWithAuth(`/admin/bookings/${id}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason: reason || 'Cancelled by admin operations' }),
+    }),
 };
 
