@@ -11,3 +11,7 @@ coverage/
 .dart_tool/
 **/build/
 scratch/
+*.key
+*.pem
+*_deploy*
+id_*
