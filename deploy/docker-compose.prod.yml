@@ -1,0 +1,63 @@
+# Production stack — lives on the VPS at /opt/litespark/docker-compose.prod.yml
+# Images are built by GitHub Actions and pulled from GHCR.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: litespark
+      POSTGRES_USER: litespark
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litespark -d litespark"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ${IMAGE_PREFIX}/api:${TAG:-latest}
+    restart: unless-stopped
+    env_file: .env.api
+    environment:
+      DB_MODE: postgres
+      DATABASE_URL: postgres://litespark:${POSTGRES_PASSWORD}@postgres:5432/litespark
+      PORT: 3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  admin:
+    image: ${IMAGE_PREFIX}/admin:${TAG:-latest}
+    restart: unless-stopped
+    depends_on: [api]
+
+  customer:
+    image: ${IMAGE_PREFIX}/customer:${TAG:-latest}
+    restart: unless-stopped
+
+  driver:
+    image: ${IMAGE_PREFIX}/driver:${TAG:-latest}
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [api, admin, customer, driver]
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
+

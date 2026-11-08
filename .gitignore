@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+!.env.api.example
+*.log
+.expo/
+.next/
+coverage/
+.dart_tool/
+**/build/
+scratch/
