@@ -18,10 +18,12 @@ class ApiClient {
   ApiClient._();
 
   Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    _baseUrl = prefs.getString(_kBaseUrl) ?? _baseUrl;
-    _accessToken = prefs.getString(_kAccessToken);
-    _refreshToken = prefs.getString(_kRefreshToken);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _baseUrl = prefs.getString(_kBaseUrl) ?? _baseUrl;
+      _accessToken = prefs.getString(_kAccessToken);
+      _refreshToken = prefs.getString(_kRefreshToken);
+    } catch (_) {}
   }
 
   String get baseUrl => _baseUrl;
@@ -29,24 +31,30 @@ class ApiClient {
 
   Future<void> setBaseUrl(String url) async {
     _baseUrl = url.replaceAll(RegExp(r'/+$'), '');
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kBaseUrl, _baseUrl);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_kBaseUrl, _baseUrl);
+    } catch (_) {}
   }
 
   Future<void> setTokens(String access, String refresh) async {
     _accessToken = access;
     _refreshToken = refresh;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kAccessToken, access);
-    await prefs.setString(_kRefreshToken, refresh);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_kAccessToken, access);
+      await prefs.setString(_kRefreshToken, refresh);
+    } catch (_) {}
   }
 
   Future<void> clearTokens() async {
     _accessToken = null;
     _refreshToken = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_kAccessToken);
-    await prefs.remove(_kRefreshToken);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_kAccessToken);
+      await prefs.remove(_kRefreshToken);
+    } catch (_) {}
   }
 
   Map<String, String> _headers({bool auth = true}) {

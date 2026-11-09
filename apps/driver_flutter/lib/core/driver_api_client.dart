@@ -26,19 +26,21 @@ class DriverApiClient {
   }
 
   Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    _accessToken = prefs.getString('driver_access_token');
-    _refreshToken = prefs.getString('driver_refresh_token');
-    final userJson = prefs.getString('driver_user');
-    if (userJson != null) {
-      try {
-        _driverUser = jsonDecode(userJson);
-      } catch (_) {}
-    }
-    final savedBase = prefs.getString('driver_base_url');
-    if (savedBase != null && savedBase.isNotEmpty) {
-      _baseUrl = savedBase;
-    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _accessToken = prefs.getString('driver_access_token');
+      _refreshToken = prefs.getString('driver_refresh_token');
+      final userJson = prefs.getString('driver_user');
+      if (userJson != null) {
+        try {
+          _driverUser = jsonDecode(userJson);
+        } catch (_) {}
+      }
+      final savedBase = prefs.getString('driver_base_url');
+      if (savedBase != null && savedBase.isNotEmpty) {
+        _baseUrl = savedBase;
+      }
+    } catch (_) {}
   }
 
   Map<String, String> _headers({bool needsAuth = true}) {
@@ -114,16 +116,18 @@ class DriverApiClient {
     _refreshToken = data['refreshToken'];
     _driverUser = data['user'];
 
-    final prefs = await SharedPreferences.getInstance();
-    if (_accessToken != null) {
-      await prefs.setString('driver_access_token', _accessToken!);
-    }
-    if (_refreshToken != null) {
-      await prefs.setString('driver_refresh_token', _refreshToken!);
-    }
-    if (_driverUser != null) {
-      await prefs.setString('driver_user', jsonEncode(_driverUser));
-    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (_accessToken != null) {
+        await prefs.setString('driver_access_token', _accessToken!);
+      }
+      if (_refreshToken != null) {
+        await prefs.setString('driver_refresh_token', _refreshToken!);
+      }
+      if (_driverUser != null) {
+        await prefs.setString('driver_user', jsonEncode(_driverUser));
+      }
+    } catch (_) {}
     return data;
   }
 
