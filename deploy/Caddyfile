@@ -14,13 +14,3 @@ api.{$DOMAIN} {
 	reverse_proxy api:3001
 }
 
-app.{$DOMAIN} {
-	encode gzip
-	reverse_proxy customer:80
-}
-
-driver.{$DOMAIN} {
-	encode gzip
-	reverse_proxy driver:80
-}
-

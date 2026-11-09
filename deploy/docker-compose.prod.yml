@@ -33,14 +33,6 @@ services:
     restart: unless-stopped
     depends_on: [api]
 
-  customer:
-    image: ${IMAGE_PREFIX}/customer:${TAG:-latest}
-    restart: unless-stopped
-
-  driver:
-    image: ${IMAGE_PREFIX}/driver:${TAG:-latest}
-    restart: unless-stopped
-
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
@@ -54,7 +46,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
-    depends_on: [api, admin, customer, driver]
+    depends_on: [api, admin]
 
 volumes:
   pgdata:

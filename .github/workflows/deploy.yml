@@ -42,16 +42,6 @@ jobs:
             dockerfile: apps/admin/Dockerfile
             build_args: |
               NEXT_PUBLIC_API_URL=https://api.${{ vars.DOMAIN }}/api/v1
-          - name: customer
-            dockerfile: docker/flutter-web.Dockerfile
-            build_args: |
-              APP_DIR=apps/customer_flutter
-              API_URL=https://api.${{ vars.DOMAIN }}
-          - name: driver
-            dockerfile: docker/flutter-web.Dockerfile
-            build_args: |
-              APP_DIR=apps/driver_flutter
-              API_URL=https://api.${{ vars.DOMAIN }}
     steps:
       - uses: actions/checkout@v4
 
