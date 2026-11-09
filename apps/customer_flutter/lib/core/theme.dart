@@ -36,18 +36,9 @@ class AppColors {
   static const borderLight = Color(0xFFF3F4F6);
 }
 
-ThemeData buildAppTheme() {
-  return ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      primary: AppColors.primary,
-      secondary: AppColors.accent,
-      surface: AppColors.surface,
-      brightness: Brightness.light,
-    ),
-    scaffoldBackgroundColor: AppColors.bg,
-    textTheme: GoogleFonts.interTextTheme().copyWith(
+TextTheme _buildTextTheme() {
+  try {
+    return GoogleFonts.interTextTheme().copyWith(
       displayLarge: GoogleFonts.inter(
         fontWeight: FontWeight.w800,
         fontSize: 32,
@@ -73,14 +64,37 @@ ThemeData buildAppTheme() {
         fontSize: 13,
         color: AppColors.textSecondary,
       ),
+    );
+  } catch (_) {
+    return const TextTheme(
+      displayLarge: TextStyle(fontWeight: FontWeight.w800, fontSize: 32, color: AppColors.textPrimary),
+      headlineMedium: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: AppColors.textPrimary),
+      titleMedium: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.textPrimary),
+      bodyLarge: TextStyle(fontWeight: FontWeight.w400, fontSize: 15, color: AppColors.textPrimary),
+      bodyMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 13, color: AppColors.textSecondary),
+    );
+  }
+}
+
+ThemeData buildAppTheme() {
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      primary: AppColors.primary,
+      secondary: AppColors.accent,
+      surface: AppColors.surface,
+      brightness: Brightness.light,
     ),
+    scaffoldBackgroundColor: AppColors.bg,
+    textTheme: _buildTextTheme(),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         minimumSize: const Size(double.infinity, 54),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
+        textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
         elevation: 2,
         shadowColor: AppColors.primary.withOpacity(0.35),
       ),
@@ -90,7 +104,7 @@ ThemeData buildAppTheme() {
         foregroundColor: AppColors.primary,
         side: const BorderSide(color: AppColors.primary, width: 1.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(

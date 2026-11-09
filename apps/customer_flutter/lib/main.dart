@@ -10,12 +10,22 @@ import 'screens/profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-  ));
-  await ApiClient().init();
+  try {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ));
+  } catch (e) {
+    debugPrint('SystemChrome error: $e');
+  }
+
+  try {
+    await ApiClient().init();
+  } catch (e) {
+    debugPrint('ApiClient init error: $e');
+  }
+
   runApp(const SwiftCabApp());
 }
 

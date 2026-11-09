@@ -23,11 +23,12 @@ class CarIcons {
     try {
       if (_baseImage == null) {
         try {
-          final codec = await ui.instantiateImageCodec(BrandAssets.carBytes);
+          final data = await rootBundle.load('assets/images/car_litespark.png');
+          final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
           final frame = await codec.getNextFrame();
           _baseImage = frame.image;
         } catch (e) {
-          debugPrint('Failed to decode carBytes: $e');
+          debugPrint('Failed to decode car image: $e');
         }
       }
 

@@ -11,6 +11,7 @@ coverage/
 .dart_tool/
 **/build/
 deploy/ssh/
+apks/
 scratch/
 *.key
 *.pem
