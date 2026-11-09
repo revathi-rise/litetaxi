@@ -80,7 +80,6 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
-          key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           source: "deploy/docker-compose.prod.yml,deploy/Caddyfile"
           target: /opt/litespark
@@ -92,18 +91,52 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
-          key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -e
             cd /opt/litespark
-            if [ -n "${{ secrets.GHCR_READ_TOKEN }}" ]; then
-              echo "${{ secrets.GHCR_READ_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+
+            # Firewall openings for direct testing and web access
+            if command -v ufw >/dev/null 2>&1; then
+              ufw allow 22/tcp || true
+              ufw allow 80/tcp || true
+              ufw allow 443/tcp || true
+              ufw allow 3000/tcp || true
+              ufw allow 3001/tcp || true
             fi
-            sed -i "s/^TAG=.*/TAG=${{ github.sha }}/" .env
+
+            REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            IMAGE_PREFIX="ghcr.io/${REPO_LOWER}"
+
+            # Login to GHCR to pull container images
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin || true
+
+            touch .env
+            grep -q "^IMAGE_PREFIX=" .env && sed -i "s|^IMAGE_PREFIX=.*|IMAGE_PREFIX=${IMAGE_PREFIX}|" .env || echo "IMAGE_PREFIX=${IMAGE_PREFIX}" >> .env
+            grep -q "^TAG=" .env && sed -i "s/^TAG=.*/TAG=${{ github.sha }}/" .env || echo "TAG=${{ github.sha }}" >> .env
+            grep -q "^POSTGRES_PASSWORD=" .env || echo "POSTGRES_PASSWORD=litetaxi_prod_pwd_2026" >> .env
+            grep -q "^DOMAIN=" .env || echo "DOMAIN=${{ vars.DOMAIN || 'litetaxi.in' }}" >> .env
+
+            if [ ! -f .env.api ]; then
+              cat << 'EOF' > .env.api
+NODE_ENV=staging
+OTP_MODE=dev
+JWT_SECRET=c38e9d4a8f10492b67f2e1059d8c3746a5b2e9c1d8f4e2b0a9c8d7e6f5a4b3c2
+DB_SYNCHRONIZE=true
+DB_MIGRATIONS_RUN=false
+SEED_DEV_DATA=true
+GEO_PROVIDER=nominatim
+ROUTING_PROVIDER=osrm
+OSRM_URL=https://router.project-osrm.org
+DISPATCH_RADIUS_KM=5
+THROTTLE_LIMIT=120
+CORS_ORIGINS=*
+EOF
+            fi
+
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
             docker image prune -f
-            sleep 15
-            curl -fsS http://127.0.0.1:3001/api/v1/health || echo "API container starting up..."
+            sleep 10
+            curl -fsS http://127.0.0.1:3001/api/v1/health || echo "API container warming up..."
 

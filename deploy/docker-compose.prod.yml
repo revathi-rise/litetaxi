@@ -19,6 +19,8 @@ services:
   api:
     image: ${IMAGE_PREFIX}/api:${TAG:-latest}
     restart: unless-stopped
+    ports:
+      - "3001:3001"
     env_file: .env.api
     environment:
       DB_MODE: postgres
@@ -31,6 +33,8 @@ services:
   admin:
     image: ${IMAGE_PREFIX}/admin:${TAG:-latest}
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     depends_on: [api]
 
   caddy:
