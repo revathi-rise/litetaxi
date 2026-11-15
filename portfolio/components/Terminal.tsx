@@ -21,11 +21,7 @@ export default function Terminal() {
     },
   ]);
 
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [history]);
+  const terminalScrollRef = useRef<HTMLDivElement>(null);
 
   const handleCommand = (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,6 +171,11 @@ export default function Terminal() {
     }
 
     setHistory((prev) => [...prev, { command: cmd, output: result }]);
+    setTimeout(() => {
+      if (terminalScrollRef.current) {
+        terminalScrollRef.current.scrollTop = terminalScrollRef.current.scrollHeight;
+      }
+    }, 50);
   };
 
   return (
@@ -209,7 +210,7 @@ export default function Terminal() {
           </div>
 
           {/* Terminal Body */}
-          <div className="p-6 max-h-[420px] min-h-[300px] overflow-y-auto space-y-4">
+          <div ref={terminalScrollRef} className="p-6 max-h-[420px] min-h-[300px] overflow-y-auto space-y-4">
             <div className="text-slate-500">
               Type &apos;<span className="text-slate-300">help</span>&apos; to view available interactive commands.
             </div>
@@ -236,7 +237,6 @@ export default function Terminal() {
                 spellCheck="false"
               />
             </form>
-            <div ref={bottomRef} />
           </div>
         </div>
 

@@ -23,7 +23,7 @@ export default function Navbar({ onOpenResume }: NavbarProps) {
     { label: 'About', href: '#about' },
     { label: 'Skills', href: '#skills' },
     { label: 'Projects', href: '#projects' },
-    { label: 'Clients', href: '#testimonials' },
+    // { label: 'Clients', href: '#testimonials' },
     { label: 'Experience', href: '#experience' },
     { label: 'Terminal', href: '#terminal' },
     { label: 'Contact', href: '#contact' },
@@ -32,8 +32,8 @@ export default function Navbar({ onOpenResume }: NavbarProps) {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? 'bg-[#07090e]/90 backdrop-blur-md border-b border-purple-500/20 py-3 shadow-2xl shadow-black/50'
-          : 'bg-transparent border-b border-white/5 py-5'
+        ? 'bg-[#07090e]/90 backdrop-blur-md border-b border-purple-500/20 py-3 shadow-2xl shadow-black/50'
+        : 'bg-transparent border-b border-white/5 py-5'
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -43,7 +43,7 @@ export default function Navbar({ onOpenResume }: NavbarProps) {
             <img src="/profile.jpg" alt="Revathi K." className="w-full h-full object-cover object-top" />
           </div>
           <span className="font-extrabold text-xl tracking-tight text-white flex items-center">
-            Revathi K<span className="gradient-text">.dev</span>
+            Revathi K<span className="text-purple-400">.</span>
           </span>
         </a>
 

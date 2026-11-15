@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Metrics from '@/components/Metrics';
@@ -16,6 +16,15 @@ import ResumeModal from '@/components/ResumeModal';
 
 export default function Home() {
   const [resumeOpen, setResumeOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !window.location.hash) {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+    }
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#07090e] text-slate-100 relative selection:bg-purple-500/30 selection:text-white">
@@ -38,7 +47,7 @@ export default function Home() {
       <Projects />
 
       {/* Happy Clients Testimonials */}
-      <Testimonials />
+      {/* <Testimonials /> */}
 
       {/* Professional Experience Timeline */}
       <Experience />
