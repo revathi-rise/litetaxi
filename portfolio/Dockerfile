@@ -1,19 +1,19 @@
 # Build context: repository root (docker build -f portfolio/Dockerfile .)
 FROM node:20-alpine AS build
-WORKDIR /repo
+WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-COPY package.json package-lock.json ./
-COPY portfolio/package.json portfolio/package.json
-RUN npm ci --workspace portfolio --include-workspace-root=false
-COPY portfolio portfolio
-RUN npm run build -w portfolio
+COPY portfolio/package.json ./
+RUN npm install
+COPY portfolio/ ./
+RUN npm run build
 
 FROM node:20-alpine
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
-WORKDIR /repo
-COPY --from=build /repo/node_modules ./node_modules
-COPY --from=build /repo/portfolio ./portfolio
-WORKDIR /repo/portfolio
+WORKDIR /app
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY --from=build /app/package.json ./package.json
 USER node
 EXPOSE 5050
-CMD ["npx", "next", "start", "-p", "5050"]
+CMD ["npm", "run", "start"]
