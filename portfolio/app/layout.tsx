@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -164,6 +165,20 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth">
       <body className="font-sans bg-[#07090e] text-slate-100 antialiased selection:bg-purple-500/30 selection:text-white">
+        {/* Google Tag Manager / Analytics Tracking */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-TFK7PXZ4"
+        />
+        <Script id="gtm-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+          `}
+        </Script>
+
+        {/* Structured Data JSON-LD Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
