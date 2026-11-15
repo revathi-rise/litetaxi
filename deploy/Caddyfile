@@ -3,6 +3,12 @@
 	email {$ACME_EMAIL}
 }
 
+# Personal Portfolio Website (Revathi K.)
+revathi.tech, www.revathi.tech {
+	encode gzip
+	reverse_proxy portfolio:5050
+}
+
 # Public website + Razorpay compliance pages + /admin portal
 {$DOMAIN}, www.{$DOMAIN} {
 	encode gzip
@@ -13,4 +19,3 @@ api.{$DOMAIN} {
 	encode gzip
 	reverse_proxy api:3001
 }
-
