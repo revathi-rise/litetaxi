@@ -73,12 +73,12 @@ export default function Projects() {
       ],
       techStack: ['NextJs', 'NodeJs', 'Pgsql', 'Razorpay', 'REST APIs'],
       details: {
-        title: 'Quiklr — Two-Wheeler Ride Booking Platform',
+        title: 'LiteTaxi — Cab Booking Platform',
         category: 'Urban Mobility & Fleet Dispatch',
-        tech: 'NextJs, NodeJs, Pgsql',
+        tech: 'NextJs, NodeJs, Pgsql, Google Map, Razorpa',
         badge: 'Mobility & Booking',
-        liveUrl: 'https://quiklr.com',
-        overview: 'A specialized urban ride-hailing and two-wheeler rental platform built to provide instant, affordable transit through automated driver assignment, live fare calculation, and cashless checkouts.',
+        liveUrl: 'http://66.116.253.203:3000/',
+        overview: 'A specialized cab booking platform built to provide instant, affordable transit through automated driver assignment, live fare calculation, and cashless checkouts.',
         architecture: [
           'Dispatch Engine: Proximity calculation algorithm matching rider pickup coordinates with nearest online bike captains.',
           'RESTful API Layer: High-performance endpoints consumed by mobile interfaces for trip lifecycle management.',
@@ -89,7 +89,7 @@ export default function Projects() {
           'Secure Razorpay payment integration with automated ride invoice generation',
           'Granular admin dashboard for managing city geo-zones and surge pricing multipliers',
         ],
-        techStack: ['PHP', 'CodeIgniter', 'MySQL', 'REST APIs', 'Razorpay', 'jQuery'],
+        techStack: ['NextJs', 'NodeJs', 'Pgsql', 'Razorpay', 'REST APIs'],
       },
     },
     {
