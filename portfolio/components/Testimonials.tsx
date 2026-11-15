@@ -166,7 +166,9 @@ export default function Testimonials() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     <h4 className="text-sm font-bold text-white truncate">{item.name}</h4>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" title="Verified Client Partner" />
+                    <span title="Verified Client Partner" className="flex-shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
+                    </span>
                   </div>
                   <p className="text-xs text-purple-300/80 font-medium truncate">{item.role}</p>
                   <p className="text-[11px] text-slate-500 truncate flex items-center gap-1">
