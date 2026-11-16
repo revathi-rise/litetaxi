@@ -1,0 +1,25 @@
+# **********************************************************
+# robots.txt for revathi.tech
+# Allows search engine indexing & AI crawler discovery
+# **********************************************************
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# AI Search Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap Location for Google Search Console
+Sitemap: https://revathi.tech/sitemap.xml
+Host: https://revathi.tech
