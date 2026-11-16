@@ -14,6 +14,8 @@ export default function Skills() {
         'QA Coordination',
         'Sprint Planning',
         'Requirements Analysis',
+        'Agile / Scrum',
+        'Release & CI/CD Governance',
       ],
     },
     {
@@ -64,16 +66,18 @@ export default function Skills() {
     },
     {
       icon: <Wrench className="w-5 h-5 text-amber-400" />,
-      title: 'Tools & Platforms',
+      title: 'DevOps & Tooling',
       skills: [
+        'CI/CD (GitHub Actions)',
+        'Docker & Containers',
+        'DevOps Automation',
+        'Linux / VPS Deployment',
         'Git & GitHub',
         'WordPress',
         'Magento',
-        'Hardhat',
-        'Thirdweb',
+        'Hardhat / Thirdweb',
         'Adobe Photoshop',
         'AfterShip Logistics',
-        'QR Code SDKs',
       ],
     },
     {
@@ -95,7 +99,7 @@ export default function Skills() {
   return (
     <section id="skills" className="py-24 bg-slate-950/50 border-y border-white/5 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-extrabold uppercase tracking-widest text-purple-400 mb-2 block">
             Technical Skills
