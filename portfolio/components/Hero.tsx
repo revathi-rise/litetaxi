@@ -11,6 +11,8 @@ import {
   Award,
   ArrowRight,
   CheckCircle2,
+  QrCode,
+  ExternalLink,
 } from 'lucide-react';
 
 interface HeroProps {
@@ -29,6 +31,7 @@ export default function Hero({ onOpenResume }: HeroProps) {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showQrPopover, setShowQrPopover] = useState(false);
 
   useEffect(() => {
     const current = roles[roleIndex];
@@ -140,7 +143,7 @@ export default function Hero({ onOpenResume }: HeroProps) {
               </a>
             </div>
 
-            {/* Action Buttons Row ("Hire Me" + "Download CV" + "LiteSpark QR Code") */}
+            {/* Action Buttons Row ("Hire Me" + "Download CV") */}
             <div className="flex flex-wrap items-center gap-3.5 mb-6 w-full sm:w-auto">
               <a
                 href="#contact"
@@ -157,31 +160,6 @@ export default function Hero({ onOpenResume }: HeroProps) {
                 <Download className="w-4 h-4 text-purple-400" />
                 <span>Download CV</span>
               </button>
-
-              {/* LiteSpark YouTube Channel QR Badge */}
-              <a
-                href="https://www.youtube.com/@litespark-r2r/shorts"
-                target="_blank"
-                rel="noreferrer"
-                className="group flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-purple-500/30 hover:border-purple-400/70 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-purple-950/20 backdrop-blur-md shadow-lg shadow-purple-900/10 hover:shadow-purple-600/20 hover:-translate-y-0.5 transition-all"
-                title="Scan or click to subscribe to LiteSpark on YouTube"
-              >
-                <div className="w-12 h-12 rounded-lg bg-white p-1 overflow-hidden ring-1 ring-purple-500/40 shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                  <img
-                    src="/litespark-qr.png"
-                    alt="LiteSpark QR Code"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex flex-col text-left pr-1">
-                  <div className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300">Subscribe</span>
-                  </div>
-                  <span className="text-xs font-black text-white group-hover:text-purple-300 transition-colors">LiteSpark</span>
-                  <span className="text-[9px] text-slate-400">Scan QR</span>
-                </div>
-              </a>
             </div>
 
             {/* Metrics Box (Reference Image Bottom Card: "10+ Experiences", "200+ Projects Done", "100% Happy Clients") */}
@@ -221,6 +199,70 @@ export default function Hero({ onOpenResume }: HeroProps) {
                 <div className="absolute -top-2 -left-2 sm:-left-4 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/95 border border-purple-500/40 text-[11px] font-bold text-slate-200 shadow-xl backdrop-blur-md">
                   <Award className="w-3.5 h-3.5 text-amber-400" />
                   <span>3x Honors Awardee</span>
+                </div>
+
+                {/* Floating LiteSpark YouTube Channel Pill with QR Popover (Mid/Bottom Left) */}
+                <div
+                  className="absolute bottom-12 -left-3 sm:-left-6 z-30"
+                  onMouseEnter={() => setShowQrPopover(true)}
+                  onMouseLeave={() => setShowQrPopover(false)}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setShowQrPopover((prev) => !prev)}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/95 border border-rose-500/40 hover:border-rose-400 text-[11px] font-bold text-slate-200 shadow-xl backdrop-blur-md transition-all hover:scale-105 group"
+                    title="Scan QR to subscribe to LiteSpark"
+                  >
+                    <Youtube className="w-3.5 h-3.5 text-rose-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <span>LiteSpark</span>
+                    <span className="text-[10px] text-purple-300 font-semibold flex items-center gap-0.5">
+                      <QrCode className="w-2.5 h-2.5" />
+                      QR
+                    </span>
+                  </button>
+
+                  {/* Popover Card */}
+                  {showQrPopover && (
+                    <div className="absolute bottom-full left-0 mb-3 w-52 p-3 rounded-2xl bg-slate-950/95 border border-purple-500/40 shadow-2xl shadow-purple-950/60 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 z-40 flex flex-col items-center text-center">
+                      <div className="flex items-center justify-between w-full mb-2">
+                        <div className="flex items-center gap-1 text-[11px] font-bold text-white">
+                          <Youtube className="w-3.5 h-3.5 text-rose-500" />
+                          <span>LiteSpark</span>
+                        </div>
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                          Channel
+                        </span>
+                      </div>
+
+                      {/* QR Code Container */}
+                      <a
+                        href="https://www.youtube.com/@litespark-r2r/shorts"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-36 h-36 bg-white p-2 rounded-xl shadow-inner ring-1 ring-purple-500/30 hover:ring-purple-400 transition-all flex items-center justify-center group/qr"
+                      >
+                        <img
+                          src="/litespark-qr.png"
+                          alt="LiteSpark YouTube QR Code"
+                          className="w-full h-full object-contain group-hover/qr:scale-105 transition-transform"
+                        />
+                      </a>
+
+                      <p className="text-[10px] text-slate-400 mt-2 font-medium">
+                        Scan with camera to subscribe
+                      </p>
+
+                      <a
+                        href="https://www.youtube.com/@litespark-r2r/shorts"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2.5 w-full py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-md shadow-rose-600/20 transition-all"
+                      >
+                        <span>Visit Channel</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 {/* Floating Status Pill (Bottom Right) */}
