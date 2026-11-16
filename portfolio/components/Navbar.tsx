@@ -32,7 +32,7 @@ export default function Navbar({ onOpenResume }: NavbarProps) {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-        ? 'bg-[#07090e]/90 backdrop-blur-md border-b border-purple-500/20 py-3 shadow-2xl shadow-black/50'
+        ? 'ios-glass-nav py-3'
         : 'bg-transparent border-b border-white/5 py-5'
         }`}
     >
@@ -90,7 +90,7 @@ export default function Navbar({ onOpenResume }: NavbarProps) {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#090d16] border-b border-purple-500/20 px-6 py-6 flex flex-col gap-4 animate-in slide-in-from-top duration-200">
+        <div className="md:hidden ios-glass-nav px-6 py-6 flex flex-col gap-4 animate-in slide-in-from-top duration-200">
           {navLinks.map((link) => (
             <a
               key={link.label}

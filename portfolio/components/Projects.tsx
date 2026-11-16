@@ -136,7 +136,6 @@ export default function Projects() {
       tech: 'PHP (CodeIgniter), MySQL, jQuery',
       emoji: '📊',
       gradient: 'from-[#222] to-[#181818]',
-      liveUrl: 'https://stwerp.com',
       summary: 'Implemented mission-critical purchase and sales lifecycle workflows, dynamic product QR code generation, real-time AfterShip logistics tracking integration, dynamic multi-currency PDF invoices, Excel bulk imports, and automated database backups.',
       features: [
         'End-to-end purchase orders, vendor procurement, stock inventory, and sales ledger management.',
@@ -149,7 +148,6 @@ export default function Projects() {
         category: 'Supply Chain, Inventory & ERP',
         tech: 'PHP (CodeIgniter), MySQL, jQuery',
         badge: 'ERP & Logistics',
-        liveUrl: 'https://stwerp.com',
         overview: 'A comprehensive operational ERP platform engineered to synchronize enterprise procurement, warehouse stock control, customer dispatching, shipment tracking, and financial invoicing under one unified system.',
         architecture: [
           'Core Inventory Engine: Real-time stock decrement and reorder threshold alerting across multiple warehouse locations.',
@@ -161,7 +159,7 @@ export default function Projects() {
           'Automated real-time parcel tracking directly embedded into customer notification emails',
           'Reliable automated multi-table database backup routines safeguarding enterprise data integrity',
         ],
-        techStack: ['PHP', 'CodeIgniter', 'MySQL', 'jQuery', 'AfterShip API', 'FPDF'],
+        techStack: ['PHP', 'CodeIgniter', 'MySQL', 'jQuery', 'AfterShip API', 'QR Code'],
       },
     },
     {
@@ -172,7 +170,6 @@ export default function Projects() {
       tech: 'PHP (CodeIgniter), MySQL, jQuery',
       emoji: '🎓',
       gradient: 'from-[#222] to-[#181818]',
-      liveUrl: 'https://literact.com',
       summary: 'Developed comprehensive educational platform with dual instructor and student workflows, curriculum & lesson management, paid course enrollment via Razorpay integration, student progress tracking, and administrative controls.',
       features: [
         'Rich course authoring tools for instructors to upload video lectures, quizzes, and study modules.',
@@ -185,7 +182,6 @@ export default function Projects() {
         category: 'EdTech & Course Delivery',
         tech: 'PHP (CodeIgniter), MySQL, jQuery',
         badge: 'EdTech Academy',
-        liveUrl: 'https://literact.com',
         overview: 'An accessible, feature-packed online learning academy empowering instructors to monetize educational content and students to acquire practical skills through video lectures, assessments, and verifiable course certificates.',
         architecture: [
           'Instructional Portal: Module-based curriculum organizer allowing multi-part chapter creation with downloadable resources.',
@@ -198,42 +194,6 @@ export default function Projects() {
           'Administrative moderation console for instructor credential verification and revenue split reporting',
         ],
         techStack: ['PHP', 'CodeIgniter', 'MySQL', 'jQuery', 'Razorpay API', 'Bootstrap'],
-      },
-    },
-    {
-      id: 'glanz',
-      title: 'Glanz Special Tools · E-Commerce Platform',
-      category: 'booking',
-      badge: 'B2B & Retail E-Commerce',
-      tech: 'PHP (Laravel), MySQL, jQuery',
-      emoji: '🛒',
-      gradient: 'from-[#222] to-[#181818]',
-      liveUrl: 'https://glanzspecialtools.com',
-      summary: 'Developed modern industrial e-commerce portal in Laravel featuring extensive product catalogs, multi-variant tool specifications, interactive shopping cart, Razorpay payment gateway, and comprehensive order fulfillment administration.',
-      features: [
-        'Custom catalog showcasing specialized industrial tools with detailed technical specifications.',
-        'Seamless shopping cart and checkout pipeline with Razorpay integration and automated tax invoicing.',
-        'Robust Laravel backend with role-based administrative catalog, inventory, and order dispatching.',
-      ],
-      techStack: ['PHP (Laravel)', 'MySQL', 'jQuery', 'Razorpay', 'Blade'],
-      details: {
-        title: 'Glanz Special Tools — Industrial E-Commerce Solution',
-        category: 'E-Commerce & Digital Retailing',
-        tech: 'PHP (Laravel), MySQL, jQuery',
-        badge: 'E-Commerce Platform',
-        liveUrl: 'https://glanzspecialtools.com',
-        overview: 'A robust e-commerce web platform engineered for industrial equipment suppliers, allowing commercial buyers and retailers to inspect tool technical specifications, calculate bulk orders, and execute secure digital transactions.',
-        architecture: [
-          'Framework Core: Built on PHP Laravel adhering to strict MVC structure, Eloquent ORM relations, and secure routing.',
-          'Transaction Flow: Multi-step checkout with real-time shipping calculation and secure Razorpay payment processing.',
-          'Admin Management: Product matrix management supporting variable attributes, stock count limits, and order status fulfillment.',
-        ],
-        highlights: [
-          'Optimized search and filtering across hundreds of industrial hardware SKUs',
-          'High security standards with CSRF protection, input sanitization, and encrypted credentials',
-          'Automated transactional emails for order confirmations, dispatches, and invoices',
-        ],
-        techStack: ['Laravel', 'PHP', 'MySQL', 'jQuery', 'Razorpay API', 'Bootstrap'],
       },
     },
     {

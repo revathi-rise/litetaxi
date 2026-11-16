@@ -56,6 +56,58 @@ body {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 25px rgba(139, 92, 246, 0.2);
 }
 
+/* Apple / iPhone Gloss Acrylic Glass Navbar */
+.ios-glass-nav {
+  background: rgba(7, 9, 14, 0.48);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Floating Animations for Hero Badges */
+@keyframes float-1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(-0.5deg);
+  }
+}
+
+@keyframes float-2 {
+  0%, 100% {
+    transform: translateY(-6px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(5px) rotate(0.8deg);
+  }
+}
+
+@keyframes float-3 {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-11px) rotate(0.5deg);
+  }
+}
+
+.animate-float-1 {
+  animation: float-1 4.2s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 4.8s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-3 5.4s ease-in-out infinite;
+}
+
 /* Gradient Text */
 .gradient-text {
   background: linear-gradient(135deg, #a78bfa 0%, #c084fc 35%, #38bdf8 100%);

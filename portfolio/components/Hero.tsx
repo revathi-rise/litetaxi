@@ -196,14 +196,14 @@ export default function Hero({ onOpenResume }: HeroProps) {
                 <div className="absolute inset-2 sm:inset-3 rounded-full border border-white/5 pointer-events-none" />
 
                 {/* Floating Achievement Pill (Top Left) */}
-                <div className="absolute -top-2 -left-2 sm:-left-4 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/95 border border-purple-500/40 text-[11px] font-bold text-slate-200 shadow-xl backdrop-blur-md">
+                <div className="absolute -top-2 -left-2 sm:-left-4 z-30 animate-float-1 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/95 border border-purple-500/40 text-[11px] font-bold text-slate-200 shadow-xl backdrop-blur-md">
                   <Award className="w-3.5 h-3.5 text-amber-400" />
                   <span>3x Honors Awardee</span>
                 </div>
 
                 {/* Floating LiteSpark YouTube Channel Pill with QR Popover (Mid/Bottom Left) */}
                 <div
-                  className="absolute bottom-12 -left-3 sm:-left-6 z-30"
+                  className="absolute bottom-12 -left-3 sm:-left-6 z-30 animate-float-2"
                   onMouseEnter={() => setShowQrPopover(true)}
                   onMouseLeave={() => setShowQrPopover(false)}
                 >
@@ -266,7 +266,7 @@ export default function Hero({ onOpenResume }: HeroProps) {
                 </div>
 
                 {/* Floating Status Pill (Bottom Right) */}
-                <div className="absolute bottom-2 -right-2 sm:-right-4 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/95 border border-cyan-500/40 text-[11px] font-bold text-slate-200 shadow-xl backdrop-blur-md">
+                <div className="absolute bottom-2 -right-2 sm:-right-4 z-30 animate-float-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/95 border border-cyan-500/40 text-[11px] font-bold text-slate-200 shadow-xl backdrop-blur-md">
                   <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Verified Tech Lead</span>
                 </div>
