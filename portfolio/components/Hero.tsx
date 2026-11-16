@@ -140,7 +140,7 @@ export default function Hero({ onOpenResume }: HeroProps) {
               </a>
             </div>
 
-            {/* Action Buttons Row ("Hire Me" + "Download CV") */}
+            {/* Action Buttons Row ("Hire Me" + "Download CV" + "LiteSpark QR Code") */}
             <div className="flex flex-wrap items-center gap-3.5 mb-6 w-full sm:w-auto">
               <a
                 href="#contact"
@@ -157,6 +157,31 @@ export default function Hero({ onOpenResume }: HeroProps) {
                 <Download className="w-4 h-4 text-purple-400" />
                 <span>Download CV</span>
               </button>
+
+              {/* LiteSpark YouTube Channel QR Badge */}
+              <a
+                href="https://www.youtube.com/@litespark-r2r/shorts"
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-purple-500/30 hover:border-purple-400/70 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-purple-950/20 backdrop-blur-md shadow-lg shadow-purple-900/10 hover:shadow-purple-600/20 hover:-translate-y-0.5 transition-all"
+                title="Scan or click to subscribe to LiteSpark on YouTube"
+              >
+                <div className="w-12 h-12 rounded-lg bg-white p-1 overflow-hidden ring-1 ring-purple-500/40 shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <img
+                    src="/litespark-qr.png"
+                    alt="LiteSpark QR Code"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex flex-col text-left pr-1">
+                  <div className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300">Subscribe</span>
+                  </div>
+                  <span className="text-xs font-black text-white group-hover:text-purple-300 transition-colors">LiteSpark</span>
+                  <span className="text-[9px] text-slate-400">Scan QR</span>
+                </div>
+              </a>
             </div>
 
             {/* Metrics Box (Reference Image Bottom Card: "10+ Experiences", "200+ Projects Done", "100% Happy Clients") */}
