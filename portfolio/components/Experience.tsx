@@ -8,10 +8,9 @@ export default function Experience() {
       company: 'Techno Tackle Software Solutions',
       location: 'Coimbatore, India',
       description: [
-        'Lead and coordinate cross-functional teams of developers and QA engineers across multiple client deliverables.',
-        'Manage end-to-end client communications, technical scope definitions, and architectural governance.',
-        'Ensure rigorous code quality, sprint cadence, and on-time delivery across web and mobile platforms.',
-        'Spearhead technical problem solving, code reviews, and developer mentorship.',
+        'Lead cross-functional developer & QA teams across multiple client deliveries.',
+        'Drive architectural governance, client communications, and sprint timelines.',
+        'Spearhead code reviews, technical architecture, and engineer mentorship.',
       ],
       skills: ['Team Leadership', 'Client Coordination', 'QA Management', 'Next.js', 'Node.js', 'PHP Frameworks', 'Delivery'],
     },
@@ -21,10 +20,9 @@ export default function Experience() {
       company: 'Haqto Technologies',
       location: 'Coimbatore, India',
       description: [
-        'Developed and maintained high-traffic video-streaming, online gaming, job-portal, and e-learning platforms.',
-        'Engineered dynamic car and bike booking applications with fare estimations and Razorpay integrations.',
-        'Constructed custom ERP systems with barcode tracking, invoicing, and logistics status synchronizers.',
-        'Built full-featured e-commerce shopping portals with product catalogs and secure checkout gateways.',
+        'Engineered high-traffic video-streaming, mobility booking, and e-learning platforms.',
+        'Built custom ERPs with inventory barcode tracking, invoicing, and logistics.',
+        'Integrated Razorpay payment gateways and automated invoice generation.',
       ],
       skills: ['CodeIgniter', 'Laravel', 'MySQL', 'jQuery', 'Razorpay', 'AfterShip API', 'ERP Systems'],
     },
@@ -34,9 +32,8 @@ export default function Experience() {
       company: 'Freelance & Independent Consulting',
       location: 'Remote / India',
       description: [
-        'Architected and deployed custom PHP web applications and mobile-responsive business websites for international and domestic clients.',
-        'Designed and developed specialized e-commerce shopping portals and classified-listing directories.',
-        'Managed full lifecycle project management from client requirements gathering to production server deployment.',
+        'Delivered custom PHP web applications, e-commerce stores, and directories.',
+        'Managed full project lifecycles from technical scoping to production release.',
       ],
       skills: ['PHP', 'MySQL', 'HTML5/CSS3', 'JavaScript', 'WordPress', 'Classified Portals'],
     },
@@ -46,9 +43,8 @@ export default function Experience() {
       company: 'Panjabootham Groups',
       location: 'Chennai, India',
       description: [
-        'Worked as a full-time PHP programmer designing, maintaining, and scaling a dedicated PHP-based digital recharge portal.',
-        'Engineered transactional payment processing and automated ledger synchronization routines.',
-        'Optimized MySQL relational queries and ensured secure transaction logging.',
+        'Scaled digital recharge portal handling high-volume transactions.',
+        'Automated payment processing, ledger sync, and optimized MySQL queries.',
       ],
       skills: ['PHP', 'MySQL', 'Recharge Portal', 'API Integration', 'Payment Gateways'],
     },
@@ -58,9 +54,8 @@ export default function Experience() {
       company: 'SRK IT Solutions',
       location: 'Chennai, India',
       description: [
-        'Designed semantic, responsive HTML/CSS website interfaces and conducted PHP development.',
-        'Gained in-depth practical experience architecting structured web applications using the Yii framework.',
-        'Created design mockups in Photoshop and translated them into clean, cross-browser compatible frontend code.',
+        'Developed responsive web interfaces and PHP applications using Yii framework.',
+        'Translated UI mockups into clean, cross-browser compatible web pages.',
       ],
       skills: ['HTML Design', 'PHP', 'Yii Framework', 'Photoshop', 'CSS', 'JavaScript'],
     },
@@ -98,33 +93,35 @@ export default function Experience() {
                     <span>{exp.period}</span>
                   </span>
                   <span className="text-xs text-slate-500 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-slate-400" />
+                    <MapPin className="w-3.5 h-3.5 text-slate-600" />
                     <span>{exp.location}</span>
                   </span>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">
                   {exp.role}
                 </h3>
-                <div className="text-sm font-semibold text-purple-400 mb-4 flex items-center gap-1.5">
+                <div className="text-sm font-semibold text-purple-400 mb-4 flex items-center gap-2">
                   <Briefcase className="w-4 h-4" />
                   <span>{exp.company}</span>
                 </div>
 
+                {/* Shortened, Punchy Bullet Points */}
                 <ul className="space-y-2 mb-6">
-                  {exp.description.map((item, dIdx) => (
-                    <li key={dIdx} className="text-xs sm:text-sm text-slate-300 leading-relaxed flex items-start gap-2">
-                      <span className="text-purple-400 font-bold">▹</span>
+                  {exp.description.map((item, itemIdx) => (
+                    <li key={itemIdx} className="text-xs sm:text-sm text-slate-300 flex items-start gap-2.5 leading-relaxed">
+                      <span className="text-purple-400 font-bold flex-shrink-0 mt-0.5">▸</span>
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
 
-                <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-800">
-                  {exp.skills.map((skill, sIdx) => (
+                {/* Skills tags */}
+                <div className="flex flex-wrap gap-1.5 pt-4 border-t border-slate-800/80">
+                  {exp.skills.map((skill) => (
                     <span
-                      key={sIdx}
-                      className="text-xs font-medium px-2.5 py-0.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60"
+                      key={skill}
+                      className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-950/70 border border-slate-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/30 transition-colors"
                     >
                       {skill}
                     </span>
