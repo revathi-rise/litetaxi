@@ -181,7 +181,7 @@ export default function Terminal() {
   return (
     <section id="terminal" className="py-24 relative bg-slate-950/40 border-y border-slate-800/80">
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        
+
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-3">
             <span>Interactive Console</span>
@@ -204,7 +204,7 @@ export default function Terminal() {
             </div>
             <div className="text-slate-400 text-xs font-semibold flex items-center gap-1.5">
               <TermIcon className="w-3.5 h-3.5 text-purple-400" />
-              <span>revathi@techno-tackle: ~/resume</span>
+              <span>revathi@cloud: ~/resume</span>
             </div>
             <div className="text-emerald-400 text-xs">● bash 5.2</div>
           </div>
