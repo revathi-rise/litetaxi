@@ -35,6 +35,19 @@ export default function Testimonials() {
     },
     {
       id: '2',
+      name: 'Maheshwaran P',
+      role: 'Chief Executive Officer',
+      company: 'VtagU Prime Time Pvt. Ltd',
+      location: 'Chennai, India',
+      avatar: 'MP',
+      avatarGradient: 'from-[#701a75] to-[#a21caf]',
+      link: 'https://vtagu.in/',
+      rating: '5',
+      content:
+        'Revathi is a powerhouse in web application development and IT infrastructure. From orchestrating flawless Next.js and Node.js code migrations to managing critical backend databases, her technical execution at VtagU Prime Time has been nothing short of exceptional. She is a proactive, highly skilled developer who consistently delivers robust, scalable solutions. I highly recommend her for any advanced software engineering role',
+    },
+    {
+      id: '3',
       name: 'Mothilal Kumar',
       role: 'CEO & Founder',
       company: 'Leo Safety Solution LLC',
@@ -143,14 +156,14 @@ export default function Testimonials() {
           </p>
         </div>
 
-        {/* Carousel Outer Wrapper */}
-        <div className="relative max-w-4xl mx-auto px-6 sm:px-10">
+        {/* Carousel Outer Wrapper — Expanded to max-w-6xl / 7xl for spacious, wide cards */}
+        <div className="relative max-w-6xl lg:max-w-7xl mx-auto px-3 sm:px-10 lg:px-12">
 
           {/* Left Arrow Button */}
           <button
             onClick={handlePrev}
             aria-label="Previous testimonial"
-            className="absolute left-0 sm:left-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 border border-[#86198f]/40 hover:border-[#c026d3] text-white flex items-center justify-center transition-all hover:scale-110 hover:bg-[#701a75] shadow-xl shadow-[#701a75]/20 backdrop-blur-md active:scale-95 group"
+            className="absolute -left-2 sm:left-0 lg:-left-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 border border-[#86198f]/40 hover:border-[#c026d3] text-white flex items-center justify-center transition-all hover:scale-110 hover:bg-[#701a75] shadow-xl shadow-[#701a75]/20 backdrop-blur-md active:scale-95 group"
           >
             <ChevronLeft className="w-6 h-6 text-slate-300 group-hover:text-white transition-colors" />
           </button>
@@ -159,7 +172,7 @@ export default function Testimonials() {
           <button
             onClick={handleNext}
             aria-label="Next testimonial"
-            className="absolute right-0 sm:right-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 border border-[#86198f]/40 hover:border-[#c026d3] text-white flex items-center justify-center transition-all hover:scale-110 hover:bg-[#701a75] shadow-xl shadow-[#701a75]/20 backdrop-blur-md active:scale-95 group"
+            className="absolute -right-2 sm:right-0 lg:-right-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 border border-[#86198f]/40 hover:border-[#c026d3] text-white flex items-center justify-center transition-all hover:scale-110 hover:bg-[#701a75] shadow-xl shadow-[#701a75]/20 backdrop-blur-md active:scale-95 group"
           >
             <ChevronRight className="w-6 h-6 text-slate-300 group-hover:text-white transition-colors" />
           </button>
@@ -184,10 +197,10 @@ export default function Testimonials() {
                 <div
                   key={`${item.id}-${idx}`}
                   style={{ width: `${100 / cardsPerView}%` }}
-                  className="flex-shrink-0 px-3 sm:px-3.5 box-border"
+                  className="flex-shrink-0 px-3 sm:px-4 box-border"
                 >
-                  {/* Compact Card — Reverted to sleek earlier card proportions */}
-                  <div className="relative rounded-2xl sm:rounded-3xl p-6 sm:p-7 flex flex-col justify-between backdrop-blur-xl h-full min-h-[320px] max-w-[420px] mx-auto bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-[#4a044e]/20 border-2 border-[#86198f]/45 hover:border-[#c026d3] shadow-xl shadow-[#701a75]/20 hover:shadow-[#a21caf]/25 transition-all duration-300 hover:-translate-y-1 group">
+                  {/* Wide, Spacious Card — Comfortable proportions */}
+                  <div className="relative rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between backdrop-blur-xl h-full w-full bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-[#4a044e]/20 border-2 border-[#86198f]/45 hover:border-[#c026d3] shadow-xl shadow-[#701a75]/20 hover:shadow-[#a21caf]/25 transition-all duration-300 hover:-translate-y-1 group">
 
                     {/* Floating Plum Quotation Mark Badge at Top Left */}
                     <div className="absolute -top-3.5 left-5 sm:left-6 px-2.5 py-1 rounded-md bg-gradient-to-br from-[#a21caf] to-[#701a75] text-white shadow-md shadow-[#701a75]/50 flex items-center justify-center border border-[#f0abfc]/30">
