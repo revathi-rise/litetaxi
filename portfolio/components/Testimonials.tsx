@@ -28,7 +28,7 @@ export default function Testimonials() {
       location: 'Chennai, India',
       avatar: 'GN',
       avatarGradient: 'from-[#86198f] to-[#c026d3]',
-      link: 'https://www.deejos.co.in/deejos-people',
+      link: 'https://www.deejos.co.in/',
       rating: '5',
       content:
         "Revathi is a dedicated and creative professional who is truly passionate about her work. I appreciate her approach to projects, attention to detail, and ability to turn ideas into meaningful results. Her eagerness to learn, adapt, and explore new things is clearly reflected in her work. It's wonderful to see her growing professionally and continuously improving her skills. Wishing her continued success in all her future endeavors!",
