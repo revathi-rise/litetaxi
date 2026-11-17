@@ -23,7 +23,7 @@ export default function Navbar({ onOpenResume }: NavbarProps) {
     { label: 'About', href: '#about' },
     { label: 'Skills', href: '#skills' },
     { label: 'Projects', href: '#projects' },
-    // { label: 'Clients', href: '#testimonials' },
+    { label: 'Clients', href: '#testimonials' },
     { label: 'Experience', href: '#experience' },
     { label: 'Terminal', href: '#terminal' },
     { label: 'Contact', href: '#contact' },

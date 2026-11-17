@@ -1,6 +1,7 @@
 'use client';
 
-import { Star, Quote, CheckCircle2, Building2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Star, ChevronLeft, ChevronRight, CheckCircle2, Quote } from 'lucide-react';
 
 interface Testimonial {
   id: string;
@@ -8,176 +9,262 @@ interface Testimonial {
   role: string;
   company: string;
   location: string;
-  project: string;
   avatar: string;
+  avatarGradient: string;
+  date?: string;
   content: string;
-  rating: number;
+  rating: string;
+  link?: string;
 }
 
 export default function Testimonials() {
   const testimonials: Testimonial[] = [
+
     {
       id: '1',
-      name: 'Vikram Patel',
-      role: 'Head of E-Commerce & Retail',
-      company: 'Glanz Special Tools',
-      location: 'Mumbai, India',
-      project: 'Glanz Special Tools E-Commerce',
-      avatar: 'VP',
+      name: 'Gnanavel',
+      role: 'CTO',
+      company: 'Deejos',
+      location: 'Chennai, India',
+      avatar: 'GN',
+      avatarGradient: 'from-[#86198f] to-[#c026d3]',
+      link: 'https://www.deejos.co.in/deejos-people',
+      rating: '5',
       content:
-        'Revathi delivered our industrial tool e-commerce portal with outstanding attention to detail. Her integration of dynamic catalog filtering and Razorpay payment flows made ordering effortless for our commercial buyers. A true engineering leader.',
-      rating: 5,
+        "Revathi is a dedicated and creative professional who is truly passionate about her work. I appreciate her approach to projects, attention to detail, and ability to turn ideas into meaningful results. Her eagerness to learn, adapt, and explore new things is clearly reflected in her work. It's wonderful to see her growing professionally and continuously improving her skills. Wishing her continued success in all her future endeavors!",
     },
     {
       id: '2',
-      name: 'Suresh R.',
-      role: 'Director of Operations',
-      company: 'STW Global Logistics',
-      location: 'Chennai, India',
-      project: 'STW ERP & Supply Chain System',
-      avatar: 'SR',
+      name: 'Mothilal Kumar',
+      role: 'CEO & Founder',
+      company: 'Leo Safety Solution LLC',
+      location: 'Muscat, Oman',
+      avatar: 'MK',
+      avatarGradient: 'from-[#701a75] to-[#a21caf]',
+      link: 'https://www.leollcgroup.com/',
+      rating: '5',
       content:
-        'Our logistics and warehouse stock auditing were completely transformed thanks to Revathi. The QR code generation per SKU and real-time AfterShip tracking integration saved our operational teams hundreds of manual hours every month. An absolute professional and natural leader.',
-      rating: 5,
-    },
-    {
-      id: '3',
-      name: 'Priya Natarajan',
-      role: 'Founder & Head of Product',
-      company: 'Literact EdTech Academy',
-      location: 'Bengaluru, India',
-      project: 'Literact E-Learning Platform',
-      avatar: 'PN',
-      content:
-        'Revathi delivered our e-learning platform with remarkable technical clarity. From Razorpay subscription paywalls to instructor lesson management, every feature was delivered on schedule with zero production regressions. She has an innate ability to translate complex business needs into clean, scalable code.',
-      rating: 5,
-    },
-    {
-      id: '4',
-      name: 'Karthik Sundaram',
-      role: 'Co-Founder & COO',
-      company: 'Quiklr Mobility',
-      location: 'Coimbatore, India',
-      project: 'Quiklr Bike Ride Booking',
-      avatar: 'KS',
-      content:
-        'Finding a Technical Lead who understands both real-time driver dispatching and complex dynamic pricing algorithms is rare. Revathi took complete ownership of our Quiklr booking APIs and driver onboarding pipeline, making launch day completely smooth and reliable.',
-      rating: 5,
-    },
-    {
-      id: '5',
-      name: 'Arvind Krishnan',
-      role: 'Managing Director',
-      company: 'Vtagu Media & Entertainment',
-      location: 'Chennai, India',
-      project: 'Vtagu Video Streaming',
-      avatar: 'AK',
-      content:
-        'Vtagu required smooth video playback across diverse devices and high-concurrency Razorpay billing. Revathi guided her engineering and QA teams with precision, delivering a robust streaming platform our subscribers love.',
-      rating: 5,
-    },
-    {
-      id: '6',
-      name: 'Meera Varma',
-      role: 'Head of Institutional Placements',
-      company: 'JobGatez Career Hub',
-      location: 'Coimbatore, India',
-      project: 'JobGatez Recruitment Portal',
-      avatar: 'MV',
-      content:
-        'The multi-role placement workflows Revathi engineered for JobGatez connected over 50+ college placement cells with corporate employers effortlessly. She is a reliable, communicative, and solutions-oriented Technical Lead.',
-      rating: 5,
-    },
+        'Your dedication, hard work, and sense of responsibility are truly appreciated. Keep up the good work, and wishing you all the best for your future!',
+    }
   ];
 
+  const total = testimonials.length;
+  // 3 duplicate sets for seamless infinite loop sliding
+  const extendedList = [...testimonials, ...testimonials, ...testimonials];
+
+  const [cardsPerView, setCardsPerView] = useState(3);
+  const [currentIndex, setCurrentIndex] = useState(total); // start at the middle set
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const touchStartX = useRef<number | null>(null);
+
+  // Responsive cards per view (capped at total testimonials)
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setCardsPerView(1);
+      } else {
+        // Never exceed total testimonials (e.g. 2 testimonials = 2 cards max)
+        setCardsPerView(Math.min(total, width < 1024 ? 2 : 3));
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [total]);
+
+  const handlePrev = () => {
+    if (!isTransitioning) return;
+    setCurrentIndex((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    if (!isTransitioning) return;
+    setCurrentIndex((prev) => prev + 1);
+  };
+
+  // Seamless jump without animation once boundary is crossed
+  const handleTransitionEnd = () => {
+    if (currentIndex >= total * 2) {
+      setIsTransitioning(false);
+      setCurrentIndex(currentIndex - total);
+    } else if (currentIndex < total) {
+      setIsTransitioning(false);
+      setCurrentIndex(currentIndex + total);
+    }
+  };
+
+  // Re-enable smooth transition after instant reset
+  useEffect(() => {
+    if (!isTransitioning) {
+      const raf = requestAnimationFrame(() => {
+        setIsTransitioning(true);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isTransitioning]);
+
+  // Touch swipe support for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) {
+      handleNext();
+    } else if (diff < -50) {
+      handlePrev();
+    }
+    touchStartX.current = null;
+  };
+
+  // Active indicator dot calculation
+  const activeDot = ((currentIndex % total) + total) % total;
+
   return (
-    <section id="testimonials" className="py-24 relative overflow-hidden bg-slate-950/40 border-y border-slate-800/80">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        
+    <section id="testimonials" className="py-24 relative overflow-hidden bg-slate-950/60 border-y border-slate-800/80">
+      {/* Background radial glow tailored to royal plum / mulberry theme */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] bg-[#701a75]/15 rounded-full blur-[150px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
         {/* Section Heading */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-3">
-            <span>Testimonials</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#701a75]/20 border border-[#a21caf]/35 text-[#f0abfc] text-xs font-semibold mb-3 shadow-sm shadow-[#701a75]/20">
+            <span>Clients Testimonials</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">
-            Happy Clients & Trusted Partners
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
+            Happy Clients Testimonials
           </h2>
           <p className="text-slate-400 text-base sm:text-lg">
-            Hear what client partners, executive stakeholders, and product founders say about collaborating with Revathi K.
+            Real feedback from enterprise partners, engineering peers, and product founders.
           </p>
         </div>
 
-        {/* Client Trust Highlights */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 max-w-4xl mx-auto">
-          <div className="bg-slate-900/60 rounded-2xl p-4 text-center border border-slate-800 backdrop-blur-md">
-            <div className="text-2xl font-extrabold text-purple-400 mb-0.5">100%</div>
-            <div className="text-xs text-slate-400 font-semibold">On-Time Delivery Rate</div>
-          </div>
-          <div className="bg-slate-900/60 rounded-2xl p-4 text-center border border-slate-800 backdrop-blur-md">
-            <div className="text-2xl font-extrabold text-cyan-400 mb-0.5">10+ Years</div>
-            <div className="text-xs text-slate-400 font-semibold">Client Partnership Track</div>
-          </div>
-          <div className="bg-slate-900/60 rounded-2xl p-4 text-center border border-slate-800 backdrop-blur-md">
-            <div className="text-2xl font-extrabold text-emerald-400 mb-0.5">5.0 / 5.0</div>
-            <div className="text-xs text-slate-400 font-semibold">Average Client Satisfaction</div>
-          </div>
-          <div className="bg-slate-900/60 rounded-2xl p-4 text-center border border-slate-800 backdrop-blur-md">
-            <div className="text-2xl font-extrabold text-amber-400 mb-0.5">3x Honors</div>
-            <div className="text-xs text-slate-400 font-semibold">Leadership & Team Awards</div>
+        {/* Carousel Outer Wrapper */}
+        <div className="relative max-w-4xl mx-auto px-6 sm:px-10">
+
+          {/* Left Arrow Button */}
+          <button
+            onClick={handlePrev}
+            aria-label="Previous testimonial"
+            className="absolute left-0 sm:left-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 border border-[#86198f]/40 hover:border-[#c026d3] text-white flex items-center justify-center transition-all hover:scale-110 hover:bg-[#701a75] shadow-xl shadow-[#701a75]/20 backdrop-blur-md active:scale-95 group"
+          >
+            <ChevronLeft className="w-6 h-6 text-slate-300 group-hover:text-white transition-colors" />
+          </button>
+
+          {/* Right Arrow Button */}
+          <button
+            onClick={handleNext}
+            aria-label="Next testimonial"
+            className="absolute right-0 sm:right-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 border border-[#86198f]/40 hover:border-[#c026d3] text-white flex items-center justify-center transition-all hover:scale-110 hover:bg-[#701a75] shadow-xl shadow-[#701a75]/20 backdrop-blur-md active:scale-95 group"
+          >
+            <ChevronRight className="w-6 h-6 text-slate-300 group-hover:text-white transition-colors" />
+          </button>
+
+          {/* Smooth Sliding Viewport (px-0 to eliminate side slivers) */}
+          <div
+            className="overflow-hidden pt-5 pb-3 px-0"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div
+              onTransitionEnd={handleTransitionEnd}
+              style={{
+                transform: `translateX(-${currentIndex * (100 / cardsPerView)}%)`,
+                transition: isTransitioning
+                  ? 'transform 550ms cubic-bezier(0.22, 1, 0.36, 1)'
+                  : 'none',
+              }}
+              className="flex will-change-transform"
+            >
+              {extendedList.map((item, idx) => (
+                <div
+                  key={`${item.id}-${idx}`}
+                  style={{ width: `${100 / cardsPerView}%` }}
+                  className="flex-shrink-0 px-3 sm:px-3.5 box-border"
+                >
+                  {/* Compact Card — Reverted to sleek earlier card proportions */}
+                  <div className="relative rounded-2xl sm:rounded-3xl p-6 sm:p-7 flex flex-col justify-between backdrop-blur-xl h-full min-h-[320px] max-w-[420px] mx-auto bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-[#4a044e]/20 border-2 border-[#86198f]/45 hover:border-[#c026d3] shadow-xl shadow-[#701a75]/20 hover:shadow-[#a21caf]/25 transition-all duration-300 hover:-translate-y-1 group">
+
+                    {/* Floating Plum Quotation Mark Badge at Top Left */}
+                    <div className="absolute -top-3.5 left-5 sm:left-6 px-2.5 py-1 rounded-md bg-gradient-to-br from-[#a21caf] to-[#701a75] text-white shadow-md shadow-[#701a75]/50 flex items-center justify-center border border-[#f0abfc]/30">
+                      <Quote className="w-3.5 h-3.5 fill-white text-white" />
+                    </div>
+
+                    {/* Top: Star Rating Badge Pill in Royal Plum */}
+                    <div className="flex justify-center mb-4 pt-1">
+                      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-lg bg-gradient-to-r from-[#701a75] via-[#86198f] to-[#701a75] border border-[#d946ef]/40 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-[#701a75]/40 tracking-wide">
+                        <Star className="w-3.5 h-3.5 fill-white text-white" />
+                        <span>{item.rating}</span>
+                      </div>
+                    </div>
+
+                    {/* Body: Testimonial Quote */}
+                    <div className="my-auto py-1">
+                      <p className="text-slate-200 text-xs sm:text-sm leading-relaxed text-center italic">
+                        &ldquo;{item.content}&rdquo;
+                      </p>
+                    </div>
+
+                    {/* Bottom: Reviewer Profile */}
+                    <div className="mt-4 pt-4 border-t border-slate-800/80 flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.avatarGradient} flex items-center justify-center text-white font-bold text-xs ring-2 ring-[#a21caf]/40 flex-shrink-0 shadow-md`}
+                      >
+                        {item.avatar}
+                      </div>
+
+                      <div className="min-w-0 flex-1 text-left">
+                        <h4 className="text-sm font-bold text-white truncate flex items-center gap-1.5">
+                          {item.name}
+                          <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+                        </h4>
+                        <p className="text-xs text-[#f0abfc]/90 font-medium truncate">
+                          {item.role}
+                        </p>
+                        <p className="text-[11px] text-slate-400 truncate">
+                          {item.link ? (
+                            <a
+                              href={item.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:text-[#f0abfc] transition-colors"
+                            >
+                              {item.company}
+                            </a>
+                          ) : (
+                            item.company
+                          )}{' '}
+                          • {item.location}
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Testimonials Grid (6 Cards) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((item) => (
-            <div
-              key={item.id}
-              className="bg-slate-900/60 rounded-2xl p-7 border border-slate-800 hover:border-purple-500/40 transition-all flex flex-col justify-between hover:-translate-y-1.5 shadow-xl group relative overflow-hidden backdrop-blur-md"
-            >
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-              <div>
-                {/* Header with Project Badge & Quote Icon */}
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <span className="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-md bg-purple-950/40 text-purple-300 border border-purple-500/30 truncate max-w-[85%]">
-                    {item.project}
-                  </span>
-                  <Quote className="w-5 h-5 text-purple-400/40 flex-shrink-0" />
-                </div>
-
-                {/* Rating Stars */}
-                <div className="flex items-center gap-1 mb-4">
-                  {Array.from({ length: item.rating }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-
-                {/* Testimonial Quote */}
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic mb-6">
-                  &ldquo;{item.content}&rdquo;
-                </p>
-              </div>
-
-              {/* Author Profile */}
-              <div className="pt-4 border-t border-slate-800 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-300 font-extrabold text-xs shadow-md flex-shrink-0">
-                  {item.avatar}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h4 className="text-sm font-bold text-white truncate">{item.name}</h4>
-                    <span title="Verified Client Partner" className="flex-shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-                    </span>
-                  </div>
-                  <p className="text-xs text-purple-300/80 font-medium truncate">{item.role}</p>
-                  <p className="text-[11px] text-slate-500 truncate flex items-center gap-1">
-                    <Building2 className="w-3 h-3 inline text-slate-400" />
-                    <span>{item.company} • {item.location}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
+        {/* Carousel Pagination Indicator Dots */}
+        <div className="flex justify-center items-center gap-2 mt-5">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setIsTransitioning(true);
+                setCurrentIndex(total + i);
+              }}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`transition-all duration-300 rounded-full ${i === activeDot
+                ? 'w-8 h-2.5 bg-gradient-to-r from-[#86198f] to-[#c026d3] shadow-sm shadow-[#86198f]/60'
+                : 'w-2.5 h-2.5 bg-slate-800 hover:bg-slate-700'
+                }`}
+            />
           ))}
         </div>
 

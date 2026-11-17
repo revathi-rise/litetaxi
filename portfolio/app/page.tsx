@@ -47,7 +47,7 @@ export default function Home() {
       <Projects />
 
       {/* Happy Clients Testimonials */}
-      {/* <Testimonials /> */}
+      <Testimonials />
 
       {/* Professional Experience Timeline */}
       <Experience />
