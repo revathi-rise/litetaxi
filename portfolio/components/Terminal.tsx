@@ -11,7 +11,6 @@ import {
   Send,
   Square,
 } from 'lucide-react';
-import InteractiveRobot from './InteractiveRobot';
 
 interface HistoryItem {
   command: string;
@@ -203,54 +202,96 @@ export default function Terminal() {
   );
   const [customQuery, setCustomQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const robotContainerRef = useRef<HTMLDivElement>(null);
+
+  // Track mouse coordinates so the 3D robot tilts and looks directly at the client
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!robotContainerRef.current) return;
+      const rect = robotContainerRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const dx = Math.max(-1, Math.min(1, (e.clientX - centerX) / (window.innerWidth / 2.5)));
+      const dy = Math.max(-1, Math.min(1, (e.clientY - centerY) / (window.innerHeight / 2.5)));
+
+      setMousePos({ x: dx, y: dy });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   // Text-To-Speech Function (System Speakers)
   const speakAloud = (text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    // 1. Immediately update speech balloon HUD on screen
+    setSpeechText(text);
+    setIsSpeaking(true);
 
-    window.speechSynthesis.cancel(); // Stop any previous speech
-
-    if (!speechEnabled) {
-      setSpeechText(text);
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setTimeout(() => setIsSpeaking(false), 4000);
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.05;
-
-    // Pick best natural English voice available
-    const voices = window.speechSynthesis.getVoices();
-    const naturalVoice =
-      voices.find((v) => v.name.includes('Google') && v.lang.startsWith('en')) ||
-      voices.find((v) => v.name.includes('Natural') && v.lang.startsWith('en')) ||
-      voices.find((v) => v.lang.startsWith('en'));
-
-    if (naturalVoice) {
-      utterance.voice = naturalVoice;
+    if (!speechEnabled) {
+      setTimeout(() => setIsSpeaking(false), 2000);
+      return;
     }
 
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      setSpeechText(text);
-    };
+    try {
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
 
-    utterance.onend = () => {
-      setIsSpeaking(false);
-    };
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.02;
 
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-    };
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const naturalVoice =
+          voices.find((v) => (v.name.includes('Google') || v.name.includes('Natural')) && v.lang.startsWith('en')) ||
+          voices.find((v) => v.lang.startsWith('en')) ||
+          voices[0];
+        if (naturalVoice) {
+          utterance.voice = naturalVoice;
+        }
+      }
 
-    window.speechSynthesis.speak(utterance);
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+      };
+
+      // Delay to avoid Chrome cancel bug
+      setTimeout(() => {
+        try {
+          window.speechSynthesis.speak(utterance);
+        } catch (_) {
+          setIsSpeaking(false);
+        }
+      }, 50);
+
+      // Failsafe timer so speaking animation always terminates cleanly
+      setTimeout(() => {
+        setIsSpeaking(false);
+      }, Math.max(4500, text.length * 85));
+    } catch (_) {
+      setTimeout(() => setIsSpeaking(false), 3000);
+    }
   };
 
   const stopSpeaking = () => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
+      try {
+        window.speechSynthesis.cancel();
+      } catch (_) {}
     }
+    setIsSpeaking(false);
   };
 
   // Custom question answering
@@ -264,22 +305,78 @@ export default function Terminal() {
 
     let answer = '';
 
-    if (lower.includes('who') || lower.includes('about') || lower.includes('intro') || lower.includes('background') || lower.includes('bio') || lower.includes('summary') || lower.includes('yourself')) {
-      answer = 'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.';
-    } else if (lower.includes('skill') || lower.includes('stack') || lower.includes('tech') || lower.includes('php') || lower.includes('next') || lower.includes('react') || lower.includes('node') || lower.includes('database')) {
-      answer = 'Revathi specializes in PHP, Laravel, CodeIgniter, Yii2, React, Next.js, Node.js, PostgreSQL, MySQL, and Docker CI/CD automation.';
-    } else if (lower.includes('project') || lower.includes('vtagu') || lower.includes('taxi') || lower.includes('work') || lower.includes('portfolio') || lower.includes('erp')) {
-      answer = 'Her premier projects include Vtagu video streaming with high-volume billing, LiteTaxi ride-booking platform, STW ERP with automated QR codes, and JobGatez talent recruitment.';
-    } else if (lower.includes('experience') || lower.includes('year') || lower.includes('company') || lower.includes('role') || lower.includes('lead')) {
-      answer = 'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions where she guides engineering architecture and delivery.';
-    } else if (lower.includes('award') || lower.includes('achievement') || lower.includes('hire') || lower.includes('why')) {
-      answer = 'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship with a 100 percent on-time delivery track.';
-    } else if (lower.includes('contact') || lower.includes('email') || lower.includes('phone') || lower.includes('reach') || lower.includes('number') || lower.includes('call')) {
-      answer = 'You can contact Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428.';
-    } else if (lower.includes('education') || lower.includes('degree') || lower.includes('college') || lower.includes('study')) {
-      answer = 'Revathi holds a Master of Science in Software Systems with 80% marks from Sree Saraswathi Thyagaraja College.';
+    if (
+      lower.includes('who') ||
+      lower.includes('about') ||
+      lower.includes('intro') ||
+      lower.includes('revathi') ||
+      lower.includes('background') ||
+      lower.includes('bio') ||
+      lower.includes('summary') ||
+      lower.includes('yourself')
+    ) {
+      answer =
+        'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.';
+    } else if (
+      lower.includes('skill') ||
+      lower.includes('stack') ||
+      lower.includes('tech') ||
+      lower.includes('php') ||
+      lower.includes('next') ||
+      lower.includes('react') ||
+      lower.includes('node') ||
+      lower.includes('database') ||
+      lower.includes('docker')
+    ) {
+      answer =
+        'Revathi specializes in PHP, Laravel, CodeIgniter, Yii2, React, Next.js, Node.js, PostgreSQL, MySQL, and Docker CI/CD automation.';
+    } else if (
+      lower.includes('project') ||
+      lower.includes('vtagu') ||
+      lower.includes('taxi') ||
+      lower.includes('work') ||
+      lower.includes('portfolio') ||
+      lower.includes('erp')
+    ) {
+      answer =
+        'Her premier projects include Vtagu video streaming with high-volume billing, LiteTaxi ride-booking platform, STW ERP with automated QR codes, and JobGatez talent recruitment.';
+    } else if (
+      lower.includes('experience') ||
+      lower.includes('year') ||
+      lower.includes('company') ||
+      lower.includes('role') ||
+      lower.includes('lead')
+    ) {
+      answer =
+        'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions where she guides engineering architecture and delivery.';
+    } else if (
+      lower.includes('award') ||
+      lower.includes('achievement') ||
+      lower.includes('hire') ||
+      lower.includes('why')
+    ) {
+      answer =
+        'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship with a 100 percent on-time delivery track.';
+    } else if (
+      lower.includes('contact') ||
+      lower.includes('email') ||
+      lower.includes('phone') ||
+      lower.includes('reach') ||
+      lower.includes('number') ||
+      lower.includes('call')
+    ) {
+      answer =
+        'You can contact Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428.';
+    } else if (
+      lower.includes('education') ||
+      lower.includes('degree') ||
+      lower.includes('college') ||
+      lower.includes('study')
+    ) {
+      answer =
+        'Revathi holds a Master of Science in Software Systems with 80% marks from Sree Saraswathi Thyagaraja College.';
     } else {
-      answer = `Revathi K is a Senior Technical Lead with a decade of engineering excellence in enterprise web applications. Feel free to ask about her skills, projects, experience, or awards!`;
+      answer = `I am SparkBot, Revathi's AI assistant! I didn't recognize "${q}". Try asking me about her 10+ years experience, core skills (PHP, Laravel, Next.js), major projects (Vtagu, LiteTaxi, STW ERP), or contact coordinates!`;
     }
 
     speakAloud(answer);
@@ -425,15 +522,72 @@ export default function Terminal() {
                 </p>
               </div>
 
-              {/* Interactive Cyber Robot: Seamlessly merged with background, tracks client cursor, moves head & hands */}
-              <InteractiveRobot
-                isSpeaking={isSpeaking}
+              {/* The 3D Standing Robot - Seamlessly Merged with Background & Tracks Client Cursor */}
+              <div
+                ref={robotContainerRef}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 onClick={() =>
                   speakAloud(
                     "Hello! I am SparkBot, Revathi's AI assistant. Ask me anything below about her experience, skills, or projects!"
                   )
                 }
-              />
+                title="Click to hear SparkBot introduce Revathi"
+                className="relative w-full max-w-[340px] sm:max-w-[380px] mx-auto flex flex-col items-center justify-center my-auto py-2 group cursor-pointer select-none"
+                style={{ perspective: '1000px' }}
+              >
+                {/* 100% Seamless Ambient Aura (No hard borders or square box) */}
+                <div
+                  className={`absolute inset-0 rounded-full blur-3xl pointer-events-none transition-all duration-700 ${
+                    isSpeaking
+                      ? 'bg-gradient-to-tr from-cyan-500/30 via-purple-600/35 to-pink-500/25 scale-110 opacity-90'
+                      : isHovered
+                      ? 'bg-gradient-to-tr from-cyan-500/25 via-purple-600/25 to-transparent scale-105 opacity-75'
+                      : 'bg-gradient-to-tr from-cyan-500/15 via-purple-600/15 to-transparent scale-95 opacity-50'
+                  }`}
+                />
+
+                {/* 3D Tilted Interactive Robot with Radial Edge Feathering */}
+                <div
+                  className="relative transition-transform duration-200 ease-out flex flex-col items-center justify-center w-full"
+                  style={{
+                    transform: `perspective(900px) rotateY(${mousePos.x * 14}deg) rotateX(${-mousePos.y * 10}deg) scale(${
+                      isHovered || isSpeaking ? 1.04 : 1
+                    })`,
+                    transformStyle: 'preserve-3d',
+                  }}
+                >
+                  <img
+                    src="/robot.png"
+                    alt="SparkBot AI Assistant"
+                    className="w-full h-auto max-h-[300px] object-contain drop-shadow-[0_20px_35px_rgba(112,26,117,0.4)] transition-all duration-300 relative z-10"
+                    style={{
+                      maskImage: 'radial-gradient(ellipse 92% 92% at 50% 50%, black 72%, transparent 100%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse 92% 92% at 50% 50%, black 72%, transparent 100%)',
+                    }}
+                  />
+
+                  {/* Soundwave equalizer indicator when speaking */}
+                  {isSpeaking ? (
+                    <div className="flex items-center gap-1.5 mt-3 bg-purple-500/10 border border-purple-500/30 px-3.5 py-1 rounded-full relative z-10 shadow-md">
+                      <span className="text-[11px] text-cyan-300 font-bold uppercase tracking-wider">
+                        Speaking Live
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                        <span className="w-1 h-5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                        <span className="w-1 h-2 bg-pink-400 rounded-full animate-bounce" />
+                        <span className="w-1 h-4 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.25s]" />
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-slate-500 group-hover:text-cyan-400 transition-colors mt-2 font-mono flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                      <span>✦ Move mouse to interact • Click to speak</span>
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Voice & Custom Ask Input Bar */}
