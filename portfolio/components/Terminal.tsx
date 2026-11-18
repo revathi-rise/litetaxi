@@ -4,27 +4,20 @@ import { useState, useRef, useEffect } from 'react';
 import {
   Terminal as TermIcon,
   Sparkles,
-  Bot,
-  Send,
+  Volume2,
+  VolumeX,
+  Mic,
+  MicOff,
   RotateCcw,
-  Zap,
-  CheckCircle2,
-  ChevronRight,
+  Send,
+  Play,
+  Square,
   MessageSquare,
-  User,
 } from 'lucide-react';
 
 interface HistoryItem {
   command: string;
   output: string | React.ReactNode;
-}
-
-interface ChatMessage {
-  id: string;
-  sender: 'bot' | 'user';
-  text: string;
-  options?: { label: string; action: string; cliCommand?: string }[];
-  timestamp?: string;
 }
 
 export default function Terminal() {
@@ -203,367 +196,503 @@ export default function Terminal() {
   };
 
   // ==========================================
-  // LEFT SIDE: Interactive AI Robot Assistant
+  // LEFT SIDE: Standing Voice-Enabled Robot
   // ==========================================
-  const [chatInput, setChatInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechEnabled, setSpeechEnabled] = useState(true);
+  const [speechText, setSpeechText] = useState(
+    "Hello! I am SparkBot, Revathi's cybernetic assistant. Ask me anything about Revathi, and I will explain it aloud through your speakers!"
+  );
+  const [customQuery, setCustomQuery] = useState('');
+  const [isListening, setIsListening] = useState(false);
 
-  const initialBotMessage: ChatMessage = {
-    id: '1',
-    sender: 'bot',
-    text: "👋 Beep boop! I'm SparkBot, Revathi's AI assistant. What brings you to her portfolio today?",
-    options: [
-      { label: '🚀 Looking to Hire a Tech Lead', action: 'hire', cliCommand: 'whoami' },
-      { label: '💻 Explore Core Tech Stack', action: 'skills', cliCommand: 'skills' },
-      { label: '📦 Inspect Production Projects', action: 'projects', cliCommand: 'projects' },
-      { label: '📬 How Can I Contact Her?', action: 'contact', cliCommand: 'contact' },
-    ],
-  };
+  // Text-To-Speech Function (System Speakers)
+  const speakAloud = (text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
 
-  const [messages, setMessages] = useState<ChatMessage[]>([initialBotMessage]);
+    window.speechSynthesis.cancel(); // Stop any previous speech
 
-  const handleOptionClick = (option: { label: string; action: string; cliCommand?: string }) => {
-    // 1. Add user message
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'user',
-      text: option.label,
-    };
-    setMessages((prev) => [...prev, userMsg]);
-
-    // 2. Trigger CLI command if applicable
-    if (option.cliCommand) {
-      executeCliCommand(option.cliCommand);
+    if (!speechEnabled) {
+      setSpeechText(text);
+      return;
     }
 
-    // 3. Robot responds with questions and follow-ups
-    setIsTyping(true);
-    setTimeout(() => {
-      let botResponse: ChatMessage;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.05;
 
-      switch (option.action) {
-        case 'hire':
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            sender: 'bot',
-            text: '✨ Fantastic! Revathi brings 10+ years of proven engineering leadership across enterprise ERP, streaming, and full-stack systems. What is your team primarily looking for?',
-            options: [
-              { label: '🎯 Cross-Functional Team Leadership', action: 'leadership', cliCommand: 'experience' },
-              { label: '⚡ Modern Full-Stack (Next.js / Node.js)', action: 'modern_stack', cliCommand: 'skills' },
-              { label: '🛡️ Enterprise PHP / Laravel Architecture', action: 'php_stack', cliCommand: 'projects' },
-              { label: '📅 Schedule an Interview Invite', action: 'invite', cliCommand: 'sudo hire-me' },
-            ],
-          };
-          break;
+    // Pick best natural English voice available
+    const voices = window.speechSynthesis.getVoices();
+    const naturalVoice =
+      voices.find((v) => v.name.includes('Google') && v.lang.startsWith('en')) ||
+      voices.find((v) => v.name.includes('Natural') && v.lang.startsWith('en')) ||
+      voices.find((v) => v.lang.startsWith('en'));
 
-        case 'skills':
-        case 'modern_stack':
-        case 'php_stack':
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            sender: 'bot',
-            text: 'I just ran the `skills` command in the CLI on the right! Revathi is deeply experienced in PHP (Laravel/Yii/CodeIgniter), Next.js, Node.js, and CI/CD DevOps. Would you like to review her production projects?',
-            options: [
-              { label: '📦 Show 7 Selected Projects', action: 'projects', cliCommand: 'projects' },
-              { label: '🏆 View Industry Honors & Awards', action: 'awards', cliCommand: 'awards' },
-              { label: '📄 Read Summary Resume (cat resume.txt)', action: 'resume', cliCommand: 'cat resume.txt' },
-            ],
-          };
-          break;
+    if (naturalVoice) {
+      utterance.voice = naturalVoice;
+    }
 
-        case 'projects':
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            sender: 'bot',
-            text: 'Check the CLI on the right! I printed her 7 featured production projects, including Vtagu (video streaming), LiteTaxi, and STW ERP. What would you like to explore next?',
-            options: [
-              { label: '🏆 View Awards & Honors', action: 'awards', cliCommand: 'awards' },
-              { label: '🎓 View Academic Education', action: 'education', cliCommand: 'education' },
-              { label: '🎬 Watch LiteSpark Tech Channel', action: 'youtube', cliCommand: 'youtube' },
-            ],
-          };
-          break;
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setSpeechText(text);
+    };
 
-        case 'awards':
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            sender: 'bot',
-            text: 'Revathi has received 3 honors: Top Gun (superior execution), Emerging Leader (mentorship & ownership), and Best Team Player! Ready to connect?',
-            options: [
-              { label: '📬 Get Direct Email & Phone', action: 'contact', cliCommand: 'contact' },
-              { label: '🚀 Run sudo hire-me in CLI', action: 'invite', cliCommand: 'sudo hire-me' },
-            ],
-          };
-          break;
+    utterance.onend = () => {
+      setIsSpeaking(false);
+    };
 
-        case 'contact':
-        case 'invite':
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            sender: 'bot',
-            text: '📬 You can reach Revathi directly at revathimss7@gmail.com or call +91 99941 57428. I also triggered access on the CLI terminal!',
-            options: [
-              { label: '🔄 Start Conversation Over', action: 'restart' },
-              { label: '🧹 Clear Terminal History', action: 'clear_cli', cliCommand: 'clear' },
-            ],
-          };
-          break;
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+    };
 
-        case 'clear_cli':
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            sender: 'bot',
-            text: 'Console cleared! What else would you like to ask or explore?',
-            options: [
-              { label: '🚀 Explore Tech Stack', action: 'skills', cliCommand: 'skills' },
-              { label: '📦 View Production Projects', action: 'projects', cliCommand: 'projects' },
-            ],
-          };
-          break;
-
-        default:
-          botResponse = initialBotMessage;
-          break;
-      }
-
-      setMessages((prev) => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 600);
+    window.speechSynthesis.speak(utterance);
   };
 
-  const handleCustomQuestion = (e: React.FormEvent) => {
+  const stopSpeaking = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  };
+
+  // Pre-configured questions & explanations about Revathi
+  const explainTopics = [
+    {
+      title: '👤 Tell me about Revathi',
+      subtitle: 'Who is she & background',
+      speakText:
+        'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.',
+      cliCmd: 'whoami',
+    },
+    {
+      title: '💻 What are her core skills?',
+      subtitle: 'Full-stack & DevOps stack',
+      speakText:
+        'Revathi is deeply skilled in PHP frameworks including Laravel, CodeIgniter, and Yii2, alongside modern frontend architectures using Next.js and React. She designs scalable MySQL and PostgreSQL relational schemas, and implements Docker and GitHub Actions CI/CD pipelines.',
+      cliCmd: 'skills',
+    },
+    {
+      title: '📦 Explain her top projects',
+      subtitle: 'Vtagu, LiteTaxi, STW ERP',
+      speakText:
+        'Revathi has engineered major production systems: Vtagu video streaming with high-volume Razorpay billing, LiteTaxi mobility dispatch platform, JobGatez recruitment portal, and STW enterprise ERP featuring automated SKU QR codes and real-time logistics tracking.',
+      cliCmd: 'projects',
+    },
+    {
+      title: '🏆 Why should we hire her?',
+      subtitle: 'Awards & leadership track',
+      speakText:
+        'Revathi has earned multiple honors including Top Gun for superior execution, Emerging Leader for developer mentorship, and Best Team Player. She maintains a 100 percent on-time delivery track across a decade of enterprise web initiatives.',
+      cliCmd: 'awards',
+    },
+    {
+      title: '📬 How can I contact her?',
+      subtitle: 'Direct email & phone coordinates',
+      speakText:
+        'You can reach Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428. She is open to Technical Lead and Architect opportunities worldwide.',
+      cliCmd: 'contact',
+    },
+  ];
+
+  const handleSelectTopic = (topic: (typeof explainTopics)[0]) => {
+    speakAloud(topic.speakText);
+    executeCliCommand(topic.cliCmd);
+  };
+
+  // Custom question answering
+  const handleAskQuestion = (e: React.FormEvent) => {
     e.preventDefault();
-    const query = chatInput.trim();
-    if (!query) return;
+    const q = customQuery.trim();
+    if (!q) return;
 
-    // Add user message
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'user',
-      text: query,
-    };
-    setMessages((prev) => [...prev, userMsg]);
-    setChatInput('');
-    setIsTyping(true);
+    setCustomQuery('');
+    const lower = q.toLowerCase();
 
-    const lower = query.toLowerCase();
+    let answer = '';
+    let cmd = 'whoami';
 
-    setTimeout(() => {
-      let reply = '';
-      let cmdToRun: string | undefined = undefined;
+    if (lower.includes('skill') || lower.includes('stack') || lower.includes('tech') || lower.includes('php') || lower.includes('next')) {
+      answer = 'Revathi specializes in PHP, Laravel, CodeIgniter, Yii2, React, Next.js, Node.js, PostgreSQL, MySQL, and Docker CI/CD automation.';
+      cmd = 'skills';
+    } else if (lower.includes('project') || lower.includes('vtagu') || lower.includes('taxi') || lower.includes('work')) {
+      answer = 'Her premier projects include Vtagu video streaming, LiteTaxi ride-booking platform, STW ERP with QR codes, and JobGatez talent recruitment.';
+      cmd = 'projects';
+    } else if (lower.includes('experience') || lower.includes('year') || lower.includes('company')) {
+      answer = 'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions.';
+      cmd = 'experience';
+    } else if (lower.includes('award') || lower.includes('achievement') || lower.includes('hire')) {
+      answer = 'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship.';
+      cmd = 'awards';
+    } else if (lower.includes('contact') || lower.includes('email') || lower.includes('phone') || lower.includes('reach')) {
+      answer = 'You can contact Revathi directly at revathimss7@gmail.com or call +91 99941 57428.';
+      cmd = 'contact';
+    } else if (lower.includes('education') || lower.includes('degree') || lower.includes('college')) {
+      answer = 'Revathi holds a Master of Science in Software Systems with 80% marks from Sree Saraswathi Thyagaraja College.';
+      cmd = 'education';
+    } else {
+      answer = `Revathi K is a Technical Lead with a decade of engineering excellence in enterprise web applications. Check the CLI simulator on the right for full details!`;
+      cmd = 'whoami';
+    }
 
-      if (lower.includes('experience') || lower.includes('year') || lower.includes('work')) {
-        reply = 'Revathi has over 10 years of experience in software development and technical leadership across Techno Tackle, Haqto, and enterprise clients.';
-        cmdToRun = 'experience';
-      } else if (lower.includes('project') || lower.includes('portfolio') || lower.includes('vtagu') || lower.includes('taxi')) {
-        reply = 'She has architected 7 major production systems including Vtagu (video streaming), LiteTaxi (mobility), and STW ERP. Check out the CLI on the right!';
-        cmdToRun = 'projects';
-      } else if (lower.includes('skill') || lower.includes('tech') || lower.includes('stack') || lower.includes('php') || lower.includes('next')) {
-        reply = 'Her core stack spans PHP (Laravel/Yii/CodeIgniter), Next.js, React, Node.js, NestJS, MySQL, PostgreSQL, Docker, and CI/CD pipelines.';
-        cmdToRun = 'skills';
-      } else if (lower.includes('contact') || lower.includes('email') || lower.includes('phone') || lower.includes('reach')) {
-        reply = 'You can reach her directly at revathimss7@gmail.com or +91 99941 57428.';
-        cmdToRun = 'contact';
-      } else if (lower.includes('hire') || lower.includes('interview') || lower.includes('salary') || lower.includes('role')) {
-        reply = 'Revathi is open to Technical Lead, Engineering Manager, and Full-Stack Architect roles! I executed `sudo hire-me` for you.';
-        cmdToRun = 'sudo hire-me';
-      } else {
-        reply = "I'm on it! Revathi is a 10+ year Technical Lead specializing in high-performance web applications and team delivery. Here are some quick questions you can ask me:";
-      }
+    speakAloud(answer);
+    executeCliCommand(cmd);
+  };
 
-      if (cmdToRun) {
-        executeCliCommand(cmdToRun);
-      }
+  // Microphone Speech-to-Text (if supported)
+  const handleToggleVoiceInput = () => {
+    if (typeof window === 'undefined') return;
 
-      const botMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        sender: 'bot',
-        text: reply,
-        options: [
-          { label: '💻 Show Core Skills', action: 'skills', cliCommand: 'skills' },
-          { label: '📦 Show Projects', action: 'projects', cliCommand: 'projects' },
-          { label: '📬 Contact Revathi', action: 'contact', cliCommand: 'contact' },
-        ],
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in this browser. Please type your question below.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setIsListening(true);
       };
 
-      setMessages((prev) => [...prev, botMsg]);
-      setIsTyping(false);
-    }, 600);
-  };
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setIsListening(false);
+        setCustomQuery(transcript);
+        // Automatically ask and speak
+        const lower = transcript.toLowerCase();
+        let answer = `Revathi K is an accomplished Technical Lead and Architect with 10+ years of experience.`;
+        let cmd = 'whoami';
+        if (lower.includes('project')) {
+          answer = 'Her notable projects include Vtagu video streaming, LiteTaxi, and STW ERP.';
+          cmd = 'projects';
+        } else if (lower.includes('skill')) {
+          answer = 'She specializes in PHP, Laravel, Next.js, Node.js, and DevOps.';
+          cmd = 'skills';
+        }
+        speakAloud(answer);
+        executeCliCommand(cmd);
+      };
 
-  const handleRestartChat = () => {
-    setMessages([initialBotMessage]);
-  };
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
 
-  useEffect(() => {
-    if (chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (_) {
+      setIsListening(false);
     }
-  }, [messages, isTyping]);
+  };
 
   return (
-    <section id="terminal" className="py-24 relative bg-slate-950/60 border-y border-slate-800/80 overflow-hidden">
+    <section id="terminal" className="py-24 relative bg-slate-950/70 border-y border-slate-800/80 overflow-hidden">
       {/* Background ambient lighting */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[350px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[350px] bg-cyan-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[600px] h-[400px] bg-purple-600/10 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[400px] bg-cyan-600/10 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-3 shadow-sm">
-            <Bot className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Interactive AI & CLI Simulator</span>
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+            <span>Voice-Interactive Robot & CLI</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
-            Meet SparkBot & Developer CLI
+            Ask SparkBot About Revathi
           </h2>
           <p className="text-slate-400 text-base sm:text-lg">
-            Chat with Revathi&apos;s interactive robot on the left, or run live terminal commands directly in the CLI on the right.
+            Click any topic below or ask a question. The standing cyber robot on the left will <span className="text-purple-300 font-semibold">speak aloud through your speakers</span> and control the CLI on the right!
           </p>
         </div>
 
-        {/* 2-Column Layout: Robot on Left (lg:col-span-6) + CLI on Right (lg:col-span-6) */}
+        {/* 2-Column Layout: Standing Robot on Left + CLI on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
           {/* ==================================================== */}
-          {/* LEFT COLUMN: Interactive AI Robot Assistant Card      */}
+          {/* LEFT COLUMN: Standing Robot with System Speaker Voice */}
           {/* ==================================================== */}
-          <div className="lg:col-span-6 flex flex-col bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-purple-950/20 border-2 border-purple-500/40 hover:border-purple-400/80 rounded-3xl shadow-2xl shadow-purple-950/30 overflow-hidden backdrop-blur-xl transition-all duration-300">
-            
-            {/* Robot Header */}
-            <div className="bg-slate-950/80 px-5 py-4 border-b border-slate-800/80 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {/* Animated Robot Avatar with Glowing Antenna and Eyes */}
-                <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 p-0.5 shadow-lg shadow-purple-500/30 flex-shrink-0 animate-pulse">
-                  <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center relative overflow-hidden">
-                    {/* Robot Visor / Eye glow */}
-                    <div className="w-6 h-3 rounded-full bg-cyan-400/90 shadow-sm shadow-cyan-300 flex items-center justify-around px-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                    </div>
-                  </div>
-                  {/* Glowing Signal LED */}
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-slate-950 animate-pulse" />
-                </div>
+          <div className="lg:col-span-6 flex flex-col bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-purple-950/25 border-2 border-purple-500/40 hover:border-purple-400/80 rounded-3xl p-6 sm:p-7 shadow-2xl shadow-purple-950/40 backdrop-blur-xl relative justify-between transition-all duration-300">
 
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm sm:text-base font-bold text-white tracking-wide">
-                      SparkBot
-                    </h3>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      ONLINE
-                    </span>
-                  </div>
-                  <p className="text-xs text-purple-300/80 font-medium">Revathi&apos;s AI Portfolio Guide</p>
-                </div>
+            {/* Top Toolbar: Speaker & Voice Control */}
+            <div className="flex items-center justify-between gap-3 pb-4 border-b border-slate-800/80">
+              <div className="flex items-center gap-2.5">
+                <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400" />
+                <span className="text-xs font-bold text-white tracking-wide uppercase">
+                  SparkBot AI
+                </span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-semibold">
+                  Voice Engine 2.4
+                </span>
               </div>
 
-              {/* Reset Conversation Button */}
-              <button
-                onClick={handleRestartChat}
-                title="Reset conversation"
-                className="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 text-slate-400 hover:text-white transition-all text-xs flex items-center gap-1.5 group"
-              >
-                <RotateCcw className="w-3.5 h-3.5 group-hover:-rotate-90 transition-transform duration-300" />
-                <span className="hidden sm:inline">Reset</span>
-              </button>
+              {/* Speaker Mute/Unmute & Stop Controls */}
+              <div className="flex items-center gap-2">
+                {isSpeaking && (
+                  <button
+                    onClick={stopSpeaking}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-300 hover:bg-rose-500 hover:text-white text-xs font-semibold transition-all active:scale-95"
+                  >
+                    <Square className="w-3 h-3 fill-current" />
+                    <span>Stop Voice</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={() => setSpeechEnabled(!speechEnabled)}
+                  title={speechEnabled ? 'Mute speaker voice' : 'Enable speaker voice'}
+                  className={`p-2 rounded-xl border transition-all text-xs flex items-center gap-1.5 ${
+                    speechEnabled
+                      ? 'bg-purple-500/20 border-purple-500/50 text-purple-300 hover:bg-purple-500 hover:text-white'
+                      : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {speechEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4" />}
+                  <span className="hidden sm:inline font-semibold">
+                    {speechEnabled ? 'Speaker ON' : 'Muted'}
+                  </span>
+                </button>
+              </div>
             </div>
 
-            {/* Robot Message Thread */}
-            <div
-              ref={chatScrollRef}
-              className="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1 max-h-[460px] min-h-[380px]"
-            >
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            {/* Standing Robot Character & Speech Visualizer */}
+            <div className="py-4 flex flex-col items-center justify-center relative">
+              
+              {/* Dynamic Speech Balloon HUD */}
+              <div className="w-full mb-4 bg-slate-950/80 border border-purple-500/40 rounded-2xl p-4 text-xs sm:text-sm text-slate-200 leading-relaxed shadow-lg relative min-h-[75px] flex items-center justify-center text-center">
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-950 border-b border-r border-purple-500/40 rotate-45" />
+                <p className="italic">
+                  {isSpeaking ? (
+                    <span className="text-cyan-300 font-medium">🗣️ &ldquo;{speechText}&rdquo;</span>
+                  ) : (
+                    <span>&ldquo;{speechText}&rdquo;</span>
+                  )}
+                </p>
+              </div>
+
+              {/* The Standing Robot Graphic */}
+              <div className="relative w-48 h-64 sm:w-56 sm:h-72 flex items-center justify-center my-2">
+                
+                {/* Ambient Cyber Pedestal Ring (Floor Projection) */}
+                <div className="absolute bottom-0 w-44 sm:w-52 h-8 rounded-full bg-gradient-to-r from-purple-500/20 via-cyan-500/40 to-purple-500/20 border border-cyan-400/40 shadow-lg shadow-cyan-400/30 blur-[1px] animate-pulse" />
+
+                {/* SVG Standing Humanoid Cyber Robot */}
+                <svg
+                  viewBox="0 0 200 260"
+                  className={`w-full h-full transition-transform duration-500 ${
+                    isSpeaking ? 'scale-105' : 'hover:scale-102'
+                  }`}
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Bot Avatar Icon */}
-                  {msg.sender === 'bot' && (
-                    <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-cyan-400 flex-shrink-0 mt-0.5">
-                      <Bot className="w-4 h-4" />
-                    </div>
-                  )}
+                  {/* Floating zero-gravity shadow */}
+                  <ellipse cx="100" cy="245" rx="55" ry="8" fill="#a855f7" fillOpacity="0.25" filter="blur(4px)" />
 
-                  <div className={`max-w-[85%] space-y-2.5`}>
-                    {/* Message Bubble */}
-                    <div
-                      className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
-                        msg.sender === 'user'
-                          ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-br-none shadow-md shadow-purple-600/20'
-                          : 'bg-slate-800/80 border border-slate-700/60 text-slate-200 rounded-bl-none shadow-md backdrop-blur-md'
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
+                  {/* Left & Right Legs */}
+                  <g id="legs">
+                    <rect x="76" y="165" width="16" height="60" rx="8" fill="#1e293b" stroke="#64748b" strokeWidth="2" />
+                    <rect x="108" y="165" width="16" height="60" rx="8" fill="#1e293b" stroke="#64748b" strokeWidth="2" />
+                    {/* Knee joint LEDs */}
+                    <circle cx="84" cy="195" r="4" fill="#38bdf8" />
+                    <circle cx="116" cy="195" r="4" fill="#38bdf8" />
+                    {/* Cyber Feet */}
+                    <path d="M70 225 H92 C95 225 96 230 92 232 H68 C64 230 65 225 70 225 Z" fill="#334155" stroke="#94a3b8" strokeWidth="2" />
+                    <path d="M108 225 H130 C134 225 135 230 131 232 H107 C103 230 104 225 108 225 Z" fill="#334155" stroke="#94a3b8" strokeWidth="2" />
+                  </g>
 
-                    {/* Interactive Clickable Question Options */}
-                    {msg.options && msg.options.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {msg.options.map((opt, oIdx) => (
-                          <button
-                            key={oIdx}
-                            onClick={() => handleOptionClick(opt)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-600 border border-purple-500/30 hover:border-purple-400 text-purple-200 hover:text-white text-xs font-semibold transition-all duration-200 hover:scale-[1.02] shadow-sm active:scale-95 text-left group"
-                          >
-                            <span>{opt.label}</span>
-                            <ChevronRight className="w-3 h-3 text-purple-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  {/* Mechanical Arms & Hands */}
+                  <g id="arms">
+                    {/* Left Arm */}
+                    <path d="M55 105 L40 145 L48 165" stroke="#475569" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="48" cy="165" r="6" fill="#38bdf8" />
+                    {/* Right Arm (Waving or Gesturing) */}
+                    <path
+                      d={isSpeaking ? "M145 105 L165 135 L160 115" : "M145 105 L160 145 L152 165"}
+                      stroke="#475569"
+                      strokeWidth="10"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="transition-all duration-300"
+                    />
+                    <circle cx={isSpeaking ? "160" : "152"} cy={isSpeaking ? "115" : "165"} r="6" fill="#c084fc" />
+                  </g>
 
-                  {/* User Avatar Icon */}
-                  {msg.sender === 'user' && (
-                    <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300 flex-shrink-0 mt-0.5">
-                      <User className="w-4 h-4" />
-                    </div>
-                  )}
-                </div>
-              ))}
+                  {/* Torso & Arc Reactor Core */}
+                  <g id="torso">
+                    <rect x="65" y="95" width="70" height="72" rx="16" fill="url(#torsoGradient)" stroke="#818cf8" strokeWidth="2.5" />
+                    {/* Chest Armor Plates */}
+                    <path d="M75 105 H125 L120 125 H80 Z" fill="#0f172a" fillOpacity="0.8" />
+                    {/* Glowing Arc Reactor Center */}
+                    <circle cx="100" cy="138" r="16" fill="#0369a1" stroke="#38bdf8" strokeWidth="2" />
+                    <circle
+                      cx="100"
+                      cy="138"
+                      r="10"
+                      fill="#38bdf8"
+                      className={isSpeaking ? "animate-ping origin-center" : "animate-pulse"}
+                    />
+                    <circle cx="100" cy="138" r="5" fill="#ffffff" />
+                  </g>
 
-              {/* Bot Typing Indicator */}
-              {isTyping && (
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-cyan-400 flex-shrink-0">
-                    <Bot className="w-4 h-4 animate-spin" />
-                  </div>
-                  <div className="bg-slate-800/80 border border-slate-700/60 px-4 py-2.5 rounded-2xl rounded-bl-none flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-2 h-2 rounded-full bg-purple-400 animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" />
+                  {/* Robot Head & Helmet */}
+                  <g id="head">
+                    {/* Neck */}
+                    <rect x="90" y="80" width="20" height="18" rx="4" fill="#334155" />
+                    
+                    {/* Antennas */}
+                    <path d="M70 42 L80 55" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
+                    <circle cx="68" cy="38" r="4" fill="#ec4899" className="animate-pulse" />
+                    <path d="M130 42 L120 55" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
+                    <circle cx="132" cy="38" r="4" fill="#38bdf8" className="animate-pulse" />
+
+                    {/* Main Helmet */}
+                    <rect x="68" y="45" width="64" height="42" rx="12" fill="url(#helmetGradient)" stroke="#a855f7" strokeWidth="2.5" />
+                    
+                    {/* Cyber Visor Display */}
+                    <rect x="74" y="52" width="52" height="20" rx="8" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" />
+                    
+                    {/* Glowing Eyes inside Visor */}
+                    <g id="eyes">
+                      <circle cx="86" cy="62" r="4.5" fill="#38bdf8">
+                        {isSpeaking && <animate attributeName="r" values="4.5;3;4.5" dur="0.4s" repeatCount="indefinite" />}
+                      </circle>
+                      <circle cx="86" cy="62" r="2" fill="#ffffff" />
+
+                      <circle cx="114" cy="62" r="4.5" fill="#38bdf8">
+                        {isSpeaking && <animate attributeName="r" values="4.5;3;4.5" dur="0.4s" repeatCount="indefinite" />}
+                      </circle>
+                      <circle cx="114" cy="62" r="2" fill="#ffffff" />
+                    </g>
+
+                    {/* Animated Mouth Equalizer (Moves when speaking) */}
+                    <g id="mouth" className="transition-all duration-150">
+                      {isSpeaking ? (
+                        <>
+                          <line x1="88" y1="80" x2="88" y2="74" stroke="#c084fc" strokeWidth="2" strokeLinecap="round">
+                            <animate attributeName="y2" values="74;71;74" dur="0.25s" repeatCount="indefinite" />
+                          </line>
+                          <line x1="94" y1="80" x2="94" y2="71" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round">
+                            <animate attributeName="y2" values="71;76;71" dur="0.3s" repeatCount="indefinite" />
+                          </line>
+                          <line x1="100" y1="80" x2="100" y2="70" stroke="#f472b6" strokeWidth="2.5" strokeLinecap="round">
+                            <animate attributeName="y2" values="70;76;70" dur="0.2s" repeatCount="indefinite" />
+                          </line>
+                          <line x1="106" y1="80" x2="106" y2="71" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round">
+                            <animate attributeName="y2" values="71;75;71" dur="0.28s" repeatCount="indefinite" />
+                          </line>
+                          <line x1="112" y1="80" x2="112" y2="74" stroke="#c084fc" strokeWidth="2" strokeLinecap="round">
+                            <animate attributeName="y2" values="74;72;74" dur="0.22s" repeatCount="indefinite" />
+                          </line>
+                        </>
+                      ) : (
+                        <line x1="90" y1="78" x2="110" y2="78" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
+                      )}
+                    </g>
+                  </g>
+
+                  {/* Color Gradients */}
+                  <defs>
+                    <linearGradient id="torsoGradient" x1="65" y1="95" x2="135" y2="167" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#1e1b4b" />
+                      <stop offset="0.5" stopColor="#312e81" />
+                      <stop offset="1" stopColor="#0f172a" />
+                    </linearGradient>
+                    <linearGradient id="helmetGradient" x1="68" y1="45" x2="132" y2="87" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#4c1d95" />
+                      <stop offset="0.5" stopColor="#2e1065" />
+                      <stop offset="1" stopColor="#0f172a" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              {/* Soundwave equalizer indicator when speaking */}
+              {isSpeaking && (
+                <div className="flex items-center gap-1.5 mt-1 bg-purple-500/10 border border-purple-500/30 px-3 py-1 rounded-full">
+                  <span className="text-[11px] text-cyan-300 font-bold uppercase tracking-wider">
+                    Speaking Live
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1 h-5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1 h-2 bg-pink-400 rounded-full animate-bounce" />
+                    <span className="w-1 h-4 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.25s]" />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Custom Input Form for SparkBot */}
-            <form
-              onSubmit={handleCustomQuestion}
-              className="p-3 sm:p-4 bg-slate-950/90 border-t border-slate-800/80 flex items-center gap-2"
-            >
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask SparkBot a question or reply..."
-                className="flex-1 bg-slate-900 border border-slate-800 focus:border-purple-500/60 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 outline-none transition-colors"
-              />
+            {/* Quick Interactive Question Buttons */}
+            <div className="space-y-2 pt-2">
+              <p className="text-xs text-purple-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Tap a question to hear SparkBot answer aloud:</span>
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {explainTopics.map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSelectTopic(item)}
+                    className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-purple-600/90 border border-slate-700/80 hover:border-purple-400 text-left transition-all hover:scale-[1.02] active:scale-95 shadow-sm group"
+                  >
+                    <div className="text-xs font-bold text-white group-hover:text-white flex items-center justify-between">
+                      <span>{item.title}</span>
+                      <Play className="w-3 h-3 text-cyan-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                    <div className="text-[11px] text-slate-400 group-hover:text-purple-200 truncate mt-0.5">
+                      {item.subtitle}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Voice & Custom Ask Input Bar */}
+            <form onSubmit={handleAskQuestion} className="pt-4 flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={customQuery}
+                  onChange={(e) => setCustomQuery(e.target.value)}
+                  placeholder="Ask SparkBot anything about Revathi..."
+                  className="w-full bg-slate-950/90 border border-slate-800 focus:border-purple-500 rounded-xl pl-3.5 pr-10 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 outline-none transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={handleToggleVoiceInput}
+                  title="Speak into microphone"
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-colors ${
+                    isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-cyan-400'
+                  }`}
+                >
+                  {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </button>
+              </div>
+
               <button
                 type="submit"
-                disabled={!chatInput.trim()}
-                aria-label="Send message to SparkBot"
-                className="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white transition-all shadow-md shadow-purple-600/30 flex items-center justify-center"
+                disabled={!customQuery.trim()}
+                className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/30 flex items-center gap-1.5"
               >
-                <Send className="w-4 h-4" />
+                <span>Ask</span>
+                <Send className="w-3.5 h-3.5" />
               </button>
             </form>
+
           </div>
 
           {/* ==================================================== */}
@@ -588,7 +717,7 @@ export default function Terminal() {
             {/* Terminal Body */}
             <div
               ref={terminalScrollRef}
-              className="p-5 sm:p-6 max-h-[460px] min-h-[380px] overflow-y-auto space-y-4 flex-1"
+              className="p-5 sm:p-6 max-h-[460px] min-h-[400px] overflow-y-auto space-y-4 flex-1"
             >
               <div className="text-slate-500 text-xs">
                 Type &apos;<span className="text-slate-300">help</span>&apos; to view all interactive commands.
