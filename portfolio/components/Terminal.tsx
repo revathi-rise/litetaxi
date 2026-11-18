@@ -262,41 +262,35 @@ export default function Terminal() {
       subtitle: 'Who is she & background',
       speakText:
         'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.',
-      cliCmd: 'whoami',
     },
     {
       title: '💻 What are her core skills?',
       subtitle: 'Full-stack & DevOps stack',
       speakText:
         'Revathi is deeply skilled in PHP frameworks including Laravel, CodeIgniter, and Yii2, alongside modern frontend architectures using Next.js and React. She designs scalable MySQL and PostgreSQL relational schemas, and implements Docker and GitHub Actions CI/CD pipelines.',
-      cliCmd: 'skills',
     },
     {
       title: '📦 Explain her top projects',
       subtitle: 'Vtagu, LiteTaxi, STW ERP',
       speakText:
         'Revathi has engineered major production systems: Vtagu video streaming with high-volume Razorpay billing, LiteTaxi mobility dispatch platform, JobGatez recruitment portal, and STW enterprise ERP featuring automated SKU QR codes and real-time logistics tracking.',
-      cliCmd: 'projects',
     },
     {
       title: '🏆 Why should we hire her?',
       subtitle: 'Awards & leadership track',
       speakText:
         'Revathi has earned multiple honors including Top Gun for superior execution, Emerging Leader for developer mentorship, and Best Team Player. She maintains a 100 percent on-time delivery track across a decade of enterprise web initiatives.',
-      cliCmd: 'awards',
     },
     {
       title: '📬 How can I contact her?',
       subtitle: 'Direct email & phone coordinates',
       speakText:
         'You can reach Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428. She is open to Technical Lead and Architect opportunities worldwide.',
-      cliCmd: 'contact',
     },
   ];
 
   const handleSelectTopic = (topic: (typeof explainTopics)[0]) => {
     speakAloud(topic.speakText);
-    executeCliCommand(topic.cliCmd);
   };
 
   // Custom question answering
@@ -309,33 +303,24 @@ export default function Terminal() {
     const lower = q.toLowerCase();
 
     let answer = '';
-    let cmd = 'whoami';
 
     if (lower.includes('skill') || lower.includes('stack') || lower.includes('tech') || lower.includes('php') || lower.includes('next')) {
       answer = 'Revathi specializes in PHP, Laravel, CodeIgniter, Yii2, React, Next.js, Node.js, PostgreSQL, MySQL, and Docker CI/CD automation.';
-      cmd = 'skills';
     } else if (lower.includes('project') || lower.includes('vtagu') || lower.includes('taxi') || lower.includes('work')) {
       answer = 'Her premier projects include Vtagu video streaming, LiteTaxi ride-booking platform, STW ERP with QR codes, and JobGatez talent recruitment.';
-      cmd = 'projects';
     } else if (lower.includes('experience') || lower.includes('year') || lower.includes('company')) {
       answer = 'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions.';
-      cmd = 'experience';
     } else if (lower.includes('award') || lower.includes('achievement') || lower.includes('hire')) {
       answer = 'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship.';
-      cmd = 'awards';
     } else if (lower.includes('contact') || lower.includes('email') || lower.includes('phone') || lower.includes('reach')) {
       answer = 'You can contact Revathi directly at revathimss7@gmail.com or call +91 99941 57428.';
-      cmd = 'contact';
     } else if (lower.includes('education') || lower.includes('degree') || lower.includes('college')) {
       answer = 'Revathi holds a Master of Science in Software Systems with 80% marks from Sree Saraswathi Thyagaraja College.';
-      cmd = 'education';
     } else {
-      answer = `Revathi K is a Technical Lead with a decade of engineering excellence in enterprise web applications. Check the CLI simulator on the right for full details!`;
-      cmd = 'whoami';
+      answer = `Revathi K is a Technical Lead with a decade of engineering excellence in enterprise web applications.`;
     }
 
     speakAloud(answer);
-    executeCliCommand(cmd);
   };
 
   // Microphone Speech-to-Text (if supported)
@@ -371,16 +356,12 @@ export default function Terminal() {
         // Automatically ask and speak
         const lower = transcript.toLowerCase();
         let answer = `Revathi K is an accomplished Technical Lead and Architect with 10+ years of experience.`;
-        let cmd = 'whoami';
         if (lower.includes('project')) {
           answer = 'Her notable projects include Vtagu video streaming, LiteTaxi, and STW ERP.';
-          cmd = 'projects';
         } else if (lower.includes('skill')) {
           answer = 'She specializes in PHP, Laravel, Next.js, Node.js, and DevOps.';
-          cmd = 'skills';
         }
         speakAloud(answer);
-        executeCliCommand(cmd);
       };
 
       recognition.onerror = () => {
@@ -412,10 +393,10 @@ export default function Terminal() {
             <span>Voice-Interactive Robot & CLI</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
-            Ask SparkBot About Revathi
+            Voice AI Assistant & Developer CLI
           </h2>
           <p className="text-slate-400 text-base sm:text-lg">
-            Click any topic below or ask a question. The standing cyber robot on the left will <span className="text-purple-300 font-semibold">speak aloud through your speakers</span> and control the CLI on the right!
+            Listen to SparkBot explain Revathi&apos;s background aloud through your system speakers on the left, or test independent developer commands in the CLI on the right.
           </p>
         </div>
 
