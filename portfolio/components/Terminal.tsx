@@ -330,7 +330,7 @@ export default function Terminal() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
-      } catch (_) {}
+      } catch (_) { }
     }
     setIsSpeaking(false);
   };
@@ -503,9 +503,7 @@ export default function Terminal() {
                 <span className="text-xs font-bold text-white tracking-wide uppercase">
                   SparkBot AI
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-semibold">
-                  Voice Engine 2.4
-                </span>
+
               </div>
 
               {/* Speaker Mute/Unmute & Stop Controls */}
@@ -524,8 +522,8 @@ export default function Terminal() {
                   onClick={() => setSpeechEnabled(!speechEnabled)}
                   title={speechEnabled ? 'Mute speaker voice' : 'Enable speaker voice'}
                   className={`p-2 rounded-xl border transition-all text-xs flex items-center gap-1.5 ${speechEnabled
-                      ? 'bg-purple-500/20 border-purple-500/50 text-purple-300 hover:bg-purple-500 hover:text-white'
-                      : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
+                    ? 'bg-purple-500/20 border-purple-500/50 text-purple-300 hover:bg-purple-500 hover:text-white'
+                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
                     }`}
                 >
                   {speechEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4" />}
@@ -563,11 +561,10 @@ export default function Terminal() {
               >
                 {/* 100% Seamless Ambient Aura (No hard borders or square box) */}
                 <div
-                  className={`absolute inset-0 rounded-full blur-3xl pointer-events-none transition-all duration-700 ${
-                    isSpeaking
+                  className={`absolute inset-0 rounded-full blur-3xl pointer-events-none transition-all duration-700 ${isSpeaking
                       ? 'bg-gradient-to-tr from-cyan-500/25 via-blue-600/30 to-purple-500/20 opacity-90'
                       : 'bg-gradient-to-tr from-cyan-500/15 via-blue-600/15 to-transparent opacity-50'
-                  }`}
+                    }`}
                 />
 
                 {/* Grounded 3D Robot Image (Merged with background, no movement on hover) */}
@@ -619,9 +616,8 @@ export default function Terminal() {
                   type="button"
                   onClick={handleToggleVoiceInput}
                   title="Speak into microphone"
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-colors ${
-                    isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-cyan-400'
-                  }`}
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-colors ${isListening ? 'bg-red-500 text-white animate-pulse' : 'text-slate-400 hover:text-cyan-400'
+                    }`}
                 >
                   {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </button>
