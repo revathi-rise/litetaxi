@@ -25,7 +25,9 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
-      if (res.ok) {
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data?.success) {
         setToastMessage('Message dispatched! Thank you for reaching out, Revathi will respond promptly.');
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
@@ -34,7 +36,7 @@ export default function Contact() {
         )}&body=${encodeURIComponent(
           `Hi Revathi,\n\n${formData.message}\n\nFrom: ${formData.name} (${formData.email})`
         )}`;
-        setToastMessage('Opening your email client...');
+        setToastMessage('Connecting to email client to send inquiry...');
       }
     } catch (_) {
       window.location.href = `mailto:revathimss7@gmail.com?subject=${encodeURIComponent(

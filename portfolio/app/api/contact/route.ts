@@ -84,6 +84,8 @@ export async function POST(request: Request) {
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            Origin: 'https://revathi.tech',
+            Referer: 'https://revathi.tech/',
           },
           body: JSON.stringify({
             name,
@@ -92,14 +94,16 @@ export async function POST(request: Request) {
             message,
             _replyto: email,
             _template: 'table',
+            _captcha: 'false',
           }),
         });
 
-        if (formSubmitRes.ok) {
+        const formSubmitData = await formSubmitRes.json().catch(() => null);
+
+        if (formSubmitRes.ok && formSubmitData?.success !== 'false' && formSubmitData?.success !== false) {
           sentVia = 'formsubmit';
         } else {
-          const errText = await formSubmitRes.text();
-          console.warn('[FormSubmit Warn]:', errText);
+          console.warn('[FormSubmit Warn]:', formSubmitData?.message || 'FormSubmit delivery issue');
         }
       } catch (formSubmitErr) {
         console.error('[FormSubmit Error]:', formSubmitErr);
@@ -107,6 +111,16 @@ export async function POST(request: Request) {
     }
 
     console.log(`[Portfolio Contact Dispatched]: From=${name} <${email}> via=${sentVia}`);
+
+    if (sentVia === 'none') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Email delivery pending one-time activation. Please verify your form or email revathimss7@gmail.com directly.',
+        },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
