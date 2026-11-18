@@ -202,6 +202,73 @@ export default function Terminal() {
   );
   const [customQuery, setCustomQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [naturalFemaleVoice, setNaturalFemaleVoice] = useState<SpeechSynthesisVoice | null>(null);
+
+  // Helper to pick the best natural female English voice across Chrome, Edge, Safari & Windows
+  const pickNaturalFemaleVoice = (): SpeechSynthesisVoice | null => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) return null;
+
+    // Preferred natural female English voices in order of quality
+    const preferredFemaleNames = [
+      'Jenny',               // Microsoft Jenny Online (Natural) - ultra-natural US female
+      'Aria',                // Microsoft Aria Online (Natural) - crisp US female
+      'Google US English',   // Chrome natural US female voice
+      'Zira',                // Microsoft Zira - English (US) female standard
+      'Samantha',            // Apple/macOS natural US female
+      'Victoria',            // Apple UK female
+      'Karen',               // Australian English female
+      'Sonia',               // British English female
+      'Neerja',              // Indian English female
+      'Heera',               // Indian English female
+    ];
+
+    for (const name of preferredFemaleNames) {
+      const match = voices.find(
+        (v) => v.name.toLowerCase().includes(name.toLowerCase()) && v.lang.startsWith('en')
+      );
+      if (match) return match;
+    }
+
+    // Fallback: any voice explicitly containing 'female'
+    const femaleFallback = voices.find(
+      (v) =>
+        v.lang.startsWith('en') &&
+        (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman'))
+    );
+    if (femaleFallback) return femaleFallback;
+
+    // Filter out known male voice names
+    const maleNames = ['david', 'guy', 'mark', 'george', 'male', 'ravi', 'richard'];
+    const nonMale = voices.find(
+      (v) =>
+        v.lang.startsWith('en') &&
+        !maleNames.some((m) => v.name.toLowerCase().includes(m))
+    );
+    if (nonMale) return nonMale;
+
+    return voices.find((v) => v.lang.startsWith('en')) || voices[0] || null;
+  };
+
+  // Pre-load and cache the natural female voice on mount and when voices change
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    const updateVoice = () => {
+      const v = pickNaturalFemaleVoice();
+      if (v) setNaturalFemaleVoice(v);
+    };
+
+    updateVoice();
+    window.speechSynthesis.onvoiceschanged = updateVoice;
+
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
 
   // Text-To-Speech Function (System Speakers)
   const speakAloud = (text: string) => {
@@ -225,17 +292,12 @@ export default function Terminal() {
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.0;
-      utterance.pitch = 1.02;
+      utterance.pitch = 1.05; // Slightly higher pitch for clear, natural, warm female resonance
 
-      const voices = window.speechSynthesis.getVoices();
-      if (voices && voices.length > 0) {
-        const naturalVoice =
-          voices.find((v) => (v.name.includes('Google') || v.name.includes('Natural')) && v.lang.startsWith('en')) ||
-          voices.find((v) => v.lang.startsWith('en')) ||
-          voices[0];
-        if (naturalVoice) {
-          utterance.voice = naturalVoice;
-        }
+      // Always use the cached natural female voice or dynamically pick it
+      const voice = naturalFemaleVoice || pickNaturalFemaleVoice();
+      if (voice) {
+        utterance.voice = voice;
       }
 
       utterance.onend = () => {
@@ -273,16 +335,9 @@ export default function Terminal() {
     setIsSpeaking(false);
   };
 
-  // Custom question answering
-  const handleAskQuestion = (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = customQuery.trim();
-    if (!q) return;
-
-    setCustomQuery('');
-    const lower = q.toLowerCase();
-
-    let answer = '';
+  // Comprehensive question answering engine
+  const getAnswerForQuery = (query: string): string => {
+    const lower = query.toLowerCase();
 
     if (
       lower.includes('who') ||
@@ -294,8 +349,7 @@ export default function Terminal() {
       lower.includes('summary') ||
       lower.includes('yourself')
     ) {
-      answer =
-        'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.';
+      return 'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.';
     } else if (
       lower.includes('skill') ||
       lower.includes('stack') ||
@@ -307,8 +361,7 @@ export default function Terminal() {
       lower.includes('database') ||
       lower.includes('docker')
     ) {
-      answer =
-        'Revathi specializes in PHP, Laravel, CodeIgniter, Yii2, React, Next.js, Node.js, PostgreSQL, MySQL, and Docker CI/CD automation.';
+      return 'Revathi specializes in PHP, Laravel, CodeIgniter, Yii2, React, Next.js, Node.js, PostgreSQL, MySQL, and Docker CI/CD automation.';
     } else if (
       lower.includes('project') ||
       lower.includes('vtagu') ||
@@ -317,8 +370,7 @@ export default function Terminal() {
       lower.includes('portfolio') ||
       lower.includes('erp')
     ) {
-      answer =
-        'Her premier projects include Vtagu video streaming with high-volume billing, LiteTaxi ride-booking platform, STW ERP with automated QR codes, and JobGatez talent recruitment.';
+      return 'Her premier projects include Vtagu video streaming with high-volume billing, LiteTaxi ride-booking platform, STW ERP with automated QR codes, and JobGatez talent recruitment.';
     } else if (
       lower.includes('experience') ||
       lower.includes('year') ||
@@ -326,16 +378,14 @@ export default function Terminal() {
       lower.includes('role') ||
       lower.includes('lead')
     ) {
-      answer =
-        'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions where she guides engineering architecture and delivery.';
+      return 'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions where she guides engineering architecture and delivery.';
     } else if (
       lower.includes('award') ||
       lower.includes('achievement') ||
       lower.includes('hire') ||
       lower.includes('why')
     ) {
-      answer =
-        'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship with a 100 percent on-time delivery track.';
+      return 'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship with a 100 percent on-time delivery track.';
     } else if (
       lower.includes('contact') ||
       lower.includes('email') ||
@@ -344,20 +394,27 @@ export default function Terminal() {
       lower.includes('number') ||
       lower.includes('call')
     ) {
-      answer =
-        'You can contact Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428.';
+      return 'You can contact Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428.';
     } else if (
       lower.includes('education') ||
       lower.includes('degree') ||
       lower.includes('college') ||
       lower.includes('study')
     ) {
-      answer =
-        'Revathi holds a Master of Science in Software Systems with 80% marks from Sree Saraswathi Thyagaraja College.';
+      return 'Revathi holds a Master of Science in Software Systems with 80% marks from Sree Saraswathi Thyagaraja College.';
     } else {
-      answer = `I am SparkBot, Revathi's AI assistant! I didn't recognize "${q}". Try asking me about her 10+ years experience, core skills (PHP, Laravel, Next.js), major projects (Vtagu, LiteTaxi, STW ERP), or contact coordinates!`;
+      return `I am SparkBot, Revathi's AI assistant! I didn't recognize "${query}". Try asking me about her 10+ years experience, core skills (PHP, Laravel, Next.js), major projects (Vtagu, LiteTaxi, STW ERP), or contact coordinates!`;
     }
+  };
 
+  // Custom question answering
+  const handleAskQuestion = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = customQuery.trim();
+    if (!q) return;
+
+    setCustomQuery('');
+    const answer = getAnswerForQuery(q);
     speakAloud(answer);
   };
 
@@ -391,14 +448,7 @@ export default function Terminal() {
         const transcript = event.results[0][0].transcript;
         setIsListening(false);
         setCustomQuery(transcript);
-        // Automatically ask and speak
-        const lower = transcript.toLowerCase();
-        let answer = `Revathi K is an accomplished Technical Lead and Architect with 10+ years of experience.`;
-        if (lower.includes('project')) {
-          answer = 'Her notable projects include Vtagu video streaming, LiteTaxi, and STW ERP.';
-        } else if (lower.includes('skill')) {
-          answer = 'She specializes in PHP, Laravel, Next.js, Node.js, and DevOps.';
-        }
+        const answer = getAnswerForQuery(transcript);
         speakAloud(answer);
       };
 
