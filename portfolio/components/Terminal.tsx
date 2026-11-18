@@ -8,11 +8,8 @@ import {
   VolumeX,
   Mic,
   MicOff,
-  RotateCcw,
   Send,
-  Play,
   Square,
-  MessageSquare,
 } from 'lucide-react';
 
 interface HistoryItem {
@@ -255,44 +252,6 @@ export default function Terminal() {
     }
   };
 
-  // Pre-configured questions & explanations about Revathi
-  const explainTopics = [
-    {
-      title: '👤 Tell me about Revathi',
-      subtitle: 'Who is she & background',
-      speakText:
-        'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.',
-    },
-    {
-      title: '💻 What are her core skills?',
-      subtitle: 'Full-stack & DevOps stack',
-      speakText:
-        'Revathi is deeply skilled in PHP frameworks including Laravel, CodeIgniter, and Yii2, alongside modern frontend architectures using Next.js and React. She designs scalable MySQL and PostgreSQL relational schemas, and implements Docker and GitHub Actions CI/CD pipelines.',
-    },
-    {
-      title: '📦 Explain her top projects',
-      subtitle: 'Vtagu, LiteTaxi, STW ERP',
-      speakText:
-        'Revathi has engineered major production systems: Vtagu video streaming with high-volume Razorpay billing, LiteTaxi mobility dispatch platform, JobGatez recruitment portal, and STW enterprise ERP featuring automated SKU QR codes and real-time logistics tracking.',
-    },
-    {
-      title: '🏆 Why should we hire her?',
-      subtitle: 'Awards & leadership track',
-      speakText:
-        'Revathi has earned multiple honors including Top Gun for superior execution, Emerging Leader for developer mentorship, and Best Team Player. She maintains a 100 percent on-time delivery track across a decade of enterprise web initiatives.',
-    },
-    {
-      title: '📬 How can I contact her?',
-      subtitle: 'Direct email & phone coordinates',
-      speakText:
-        'You can reach Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428. She is open to Technical Lead and Architect opportunities worldwide.',
-    },
-  ];
-
-  const handleSelectTopic = (topic: (typeof explainTopics)[0]) => {
-    speakAloud(topic.speakText);
-  };
-
   // Custom question answering
   const handleAskQuestion = (e: React.FormEvent) => {
     e.preventDefault();
@@ -304,20 +263,22 @@ export default function Terminal() {
 
     let answer = '';
 
-    if (lower.includes('skill') || lower.includes('stack') || lower.includes('tech') || lower.includes('php') || lower.includes('next')) {
+    if (lower.includes('who') || lower.includes('about') || lower.includes('intro') || lower.includes('background') || lower.includes('bio') || lower.includes('summary') || lower.includes('yourself')) {
+      answer = 'Revathi K is a Senior Technical Lead and Full-Stack Architect with over 10 years of proven delivery across enterprise ERP, high-concurrency video streaming, and scalable web solutions. She specializes in guiding engineering teams, client coordination, and architectural governance.';
+    } else if (lower.includes('skill') || lower.includes('stack') || lower.includes('tech') || lower.includes('php') || lower.includes('next') || lower.includes('react') || lower.includes('node') || lower.includes('database')) {
       answer = 'Revathi specializes in PHP, Laravel, CodeIgniter, Yii2, React, Next.js, Node.js, PostgreSQL, MySQL, and Docker CI/CD automation.';
-    } else if (lower.includes('project') || lower.includes('vtagu') || lower.includes('taxi') || lower.includes('work')) {
-      answer = 'Her premier projects include Vtagu video streaming, LiteTaxi ride-booking platform, STW ERP with QR codes, and JobGatez talent recruitment.';
-    } else if (lower.includes('experience') || lower.includes('year') || lower.includes('company')) {
-      answer = 'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions.';
-    } else if (lower.includes('award') || lower.includes('achievement') || lower.includes('hire')) {
-      answer = 'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship.';
-    } else if (lower.includes('contact') || lower.includes('email') || lower.includes('phone') || lower.includes('reach')) {
-      answer = 'You can contact Revathi directly at revathimss7@gmail.com or call +91 99941 57428.';
-    } else if (lower.includes('education') || lower.includes('degree') || lower.includes('college')) {
+    } else if (lower.includes('project') || lower.includes('vtagu') || lower.includes('taxi') || lower.includes('work') || lower.includes('portfolio') || lower.includes('erp')) {
+      answer = 'Her premier projects include Vtagu video streaming with high-volume billing, LiteTaxi ride-booking platform, STW ERP with automated QR codes, and JobGatez talent recruitment.';
+    } else if (lower.includes('experience') || lower.includes('year') || lower.includes('company') || lower.includes('role') || lower.includes('lead')) {
+      answer = 'Revathi has over 10 years of software engineering experience, currently serving as Technical Lead at Techno Tackle Software Solutions where she guides engineering architecture and delivery.';
+    } else if (lower.includes('award') || lower.includes('achievement') || lower.includes('hire') || lower.includes('why')) {
+      answer = 'Revathi is a 3-time awardee honored as Top Gun, Emerging Leader, and Best Team Player for superior delivery cadence and developer mentorship with a 100 percent on-time delivery track.';
+    } else if (lower.includes('contact') || lower.includes('email') || lower.includes('phone') || lower.includes('reach') || lower.includes('number') || lower.includes('call')) {
+      answer = 'You can contact Revathi directly by email at revathimss7@gmail.com or by phone at +91 99941 57428.';
+    } else if (lower.includes('education') || lower.includes('degree') || lower.includes('college') || lower.includes('study')) {
       answer = 'Revathi holds a Master of Science in Software Systems with 80% marks from Sree Saraswathi Thyagaraja College.';
     } else {
-      answer = `Revathi K is a Technical Lead with a decade of engineering excellence in enterprise web applications.`;
+      answer = `Revathi K is a Senior Technical Lead with a decade of engineering excellence in enterprise web applications. Feel free to ask about her skills, projects, experience, or awards!`;
     }
 
     speakAloud(answer);
@@ -435,11 +396,10 @@ export default function Terminal() {
                 <button
                   onClick={() => setSpeechEnabled(!speechEnabled)}
                   title={speechEnabled ? 'Mute speaker voice' : 'Enable speaker voice'}
-                  className={`p-2 rounded-xl border transition-all text-xs flex items-center gap-1.5 ${
-                    speechEnabled
+                  className={`p-2 rounded-xl border transition-all text-xs flex items-center gap-1.5 ${speechEnabled
                       ? 'bg-purple-500/20 border-purple-500/50 text-purple-300 hover:bg-purple-500 hover:text-white'
                       : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   {speechEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4" />}
                   <span className="hidden sm:inline font-semibold">
@@ -449,11 +409,11 @@ export default function Terminal() {
               </div>
             </div>
 
-            {/* Standing Robot Character & Speech Visualizer */}
-            <div className="py-4 flex flex-col items-center justify-center relative">
-              
+            {/* Standing 3D Robot & Speech Visualizer */}
+            <div className="py-2 flex flex-col items-center justify-center relative flex-1">
+
               {/* Dynamic Speech Balloon HUD */}
-              <div className="w-full mb-4 bg-slate-950/80 border border-purple-500/40 rounded-2xl p-4 text-xs sm:text-sm text-slate-200 leading-relaxed shadow-lg relative min-h-[75px] flex items-center justify-center text-center">
+              <div className="w-full mb-3 bg-slate-950/80 border border-purple-500/40 rounded-2xl p-3.5 sm:p-4 text-xs sm:text-sm text-slate-200 leading-relaxed shadow-lg relative min-h-[68px] flex items-center justify-center text-center">
                 <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-950 border-b border-r border-purple-500/40 rotate-45" />
                 <p className="italic">
                   {isSpeaking ? (
@@ -464,192 +424,56 @@ export default function Terminal() {
                 </p>
               </div>
 
-              {/* The Standing Robot Graphic */}
-              <div className="relative w-48 h-64 sm:w-56 sm:h-72 flex items-center justify-center my-2">
-                
-                {/* Ambient Cyber Pedestal Ring (Floor Projection) */}
-                <div className="absolute bottom-0 w-44 sm:w-52 h-8 rounded-full bg-gradient-to-r from-purple-500/20 via-cyan-500/40 to-purple-500/20 border border-cyan-400/40 shadow-lg shadow-cyan-400/30 blur-[1px] animate-pulse" />
+              {/* The 3D Standing Cyber Robot Image */}
+              <div
+                onClick={() =>
+                  speakAloud(
+                    "Hello! I am SparkBot, Revathi's AI assistant. Ask me anything below about her experience, skills, or projects!"
+                  )
+                }
+                title="Click to hear SparkBot introduce Revathi"
+                className="relative w-full max-w-[320px] sm:max-w-[360px] mx-auto flex flex-col items-center justify-center my-auto py-2 group cursor-pointer"
+              >
+                {/* Ambient glow behind robot */}
+                <div className={`absolute inset-0 bg-cyan-500/10 rounded-2xl blur-xl transition-opacity duration-500 ${isSpeaking ? 'opacity-100 bg-purple-600/20' : 'opacity-40 group-hover:opacity-75'}`} />
 
-                {/* SVG Standing Humanoid Cyber Robot */}
-                <svg
-                  viewBox="0 0 200 260"
-                  className={`w-full h-full transition-transform duration-500 ${
-                    isSpeaking ? 'scale-105' : 'hover:scale-102'
+                <img
+                  src="/robot.jpg"
+                  alt="SparkBot AI Assistant"
+                  className={`w-full h-auto max-h-[300px] object-contain rounded-2xl shadow-2xl shadow-purple-950/50 transition-all duration-500 relative z-10 ${
+                    isSpeaking ? 'scale-105 ring-2 ring-cyan-400/60 shadow-cyan-500/30' : 'group-hover:scale-102'
                   }`}
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Floating zero-gravity shadow */}
-                  <ellipse cx="100" cy="245" rx="55" ry="8" fill="#a855f7" fillOpacity="0.25" filter="blur(4px)" />
+                />
 
-                  {/* Left & Right Legs */}
-                  <g id="legs">
-                    <rect x="76" y="165" width="16" height="60" rx="8" fill="#1e293b" stroke="#64748b" strokeWidth="2" />
-                    <rect x="108" y="165" width="16" height="60" rx="8" fill="#1e293b" stroke="#64748b" strokeWidth="2" />
-                    {/* Knee joint LEDs */}
-                    <circle cx="84" cy="195" r="4" fill="#38bdf8" />
-                    <circle cx="116" cy="195" r="4" fill="#38bdf8" />
-                    {/* Cyber Feet */}
-                    <path d="M70 225 H92 C95 225 96 230 92 232 H68 C64 230 65 225 70 225 Z" fill="#334155" stroke="#94a3b8" strokeWidth="2" />
-                    <path d="M108 225 H130 C134 225 135 230 131 232 H107 C103 230 104 225 108 225 Z" fill="#334155" stroke="#94a3b8" strokeWidth="2" />
-                  </g>
-
-                  {/* Mechanical Arms & Hands */}
-                  <g id="arms">
-                    {/* Left Arm */}
-                    <path d="M55 105 L40 145 L48 165" stroke="#475569" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
-                    <circle cx="48" cy="165" r="6" fill="#38bdf8" />
-                    {/* Right Arm (Waving or Gesturing) */}
-                    <path
-                      d={isSpeaking ? "M145 105 L165 135 L160 115" : "M145 105 L160 145 L152 165"}
-                      stroke="#475569"
-                      strokeWidth="10"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="transition-all duration-300"
-                    />
-                    <circle cx={isSpeaking ? "160" : "152"} cy={isSpeaking ? "115" : "165"} r="6" fill="#c084fc" />
-                  </g>
-
-                  {/* Torso & Arc Reactor Core */}
-                  <g id="torso">
-                    <rect x="65" y="95" width="70" height="72" rx="16" fill="url(#torsoGradient)" stroke="#818cf8" strokeWidth="2.5" />
-                    {/* Chest Armor Plates */}
-                    <path d="M75 105 H125 L120 125 H80 Z" fill="#0f172a" fillOpacity="0.8" />
-                    {/* Glowing Arc Reactor Center */}
-                    <circle cx="100" cy="138" r="16" fill="#0369a1" stroke="#38bdf8" strokeWidth="2" />
-                    <circle
-                      cx="100"
-                      cy="138"
-                      r="10"
-                      fill="#38bdf8"
-                      className={isSpeaking ? "animate-ping origin-center" : "animate-pulse"}
-                    />
-                    <circle cx="100" cy="138" r="5" fill="#ffffff" />
-                  </g>
-
-                  {/* Robot Head & Helmet */}
-                  <g id="head">
-                    {/* Neck */}
-                    <rect x="90" y="80" width="20" height="18" rx="4" fill="#334155" />
-                    
-                    {/* Antennas */}
-                    <path d="M70 42 L80 55" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
-                    <circle cx="68" cy="38" r="4" fill="#ec4899" className="animate-pulse" />
-                    <path d="M130 42 L120 55" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
-                    <circle cx="132" cy="38" r="4" fill="#38bdf8" className="animate-pulse" />
-
-                    {/* Main Helmet */}
-                    <rect x="68" y="45" width="64" height="42" rx="12" fill="url(#helmetGradient)" stroke="#a855f7" strokeWidth="2.5" />
-                    
-                    {/* Cyber Visor Display */}
-                    <rect x="74" y="52" width="52" height="20" rx="8" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" />
-                    
-                    {/* Glowing Eyes inside Visor */}
-                    <g id="eyes">
-                      <circle cx="86" cy="62" r="4.5" fill="#38bdf8">
-                        {isSpeaking && <animate attributeName="r" values="4.5;3;4.5" dur="0.4s" repeatCount="indefinite" />}
-                      </circle>
-                      <circle cx="86" cy="62" r="2" fill="#ffffff" />
-
-                      <circle cx="114" cy="62" r="4.5" fill="#38bdf8">
-                        {isSpeaking && <animate attributeName="r" values="4.5;3;4.5" dur="0.4s" repeatCount="indefinite" />}
-                      </circle>
-                      <circle cx="114" cy="62" r="2" fill="#ffffff" />
-                    </g>
-
-                    {/* Animated Mouth Equalizer (Moves when speaking) */}
-                    <g id="mouth" className="transition-all duration-150">
-                      {isSpeaking ? (
-                        <>
-                          <line x1="88" y1="80" x2="88" y2="74" stroke="#c084fc" strokeWidth="2" strokeLinecap="round">
-                            <animate attributeName="y2" values="74;71;74" dur="0.25s" repeatCount="indefinite" />
-                          </line>
-                          <line x1="94" y1="80" x2="94" y2="71" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round">
-                            <animate attributeName="y2" values="71;76;71" dur="0.3s" repeatCount="indefinite" />
-                          </line>
-                          <line x1="100" y1="80" x2="100" y2="70" stroke="#f472b6" strokeWidth="2.5" strokeLinecap="round">
-                            <animate attributeName="y2" values="70;76;70" dur="0.2s" repeatCount="indefinite" />
-                          </line>
-                          <line x1="106" y1="80" x2="106" y2="71" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round">
-                            <animate attributeName="y2" values="71;75;71" dur="0.28s" repeatCount="indefinite" />
-                          </line>
-                          <line x1="112" y1="80" x2="112" y2="74" stroke="#c084fc" strokeWidth="2" strokeLinecap="round">
-                            <animate attributeName="y2" values="74;72;74" dur="0.22s" repeatCount="indefinite" />
-                          </line>
-                        </>
-                      ) : (
-                        <line x1="90" y1="78" x2="110" y2="78" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
-                      )}
-                    </g>
-                  </g>
-
-                  {/* Color Gradients */}
-                  <defs>
-                    <linearGradient id="torsoGradient" x1="65" y1="95" x2="135" y2="167" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#1e1b4b" />
-                      <stop offset="0.5" stopColor="#312e81" />
-                      <stop offset="1" stopColor="#0f172a" />
-                    </linearGradient>
-                    <linearGradient id="helmetGradient" x1="68" y1="45" x2="132" y2="87" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#4c1d95" />
-                      <stop offset="0.5" stopColor="#2e1065" />
-                      <stop offset="1" stopColor="#0f172a" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
-              {/* Soundwave equalizer indicator when speaking */}
-              {isSpeaking && (
-                <div className="flex items-center gap-1.5 mt-1 bg-purple-500/10 border border-purple-500/30 px-3 py-1 rounded-full">
-                  <span className="text-[11px] text-cyan-300 font-bold uppercase tracking-wider">
-                    Speaking Live
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-1 h-5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-1 h-2 bg-pink-400 rounded-full animate-bounce" />
-                    <span className="w-1 h-4 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.25s]" />
+                {/* Soundwave equalizer indicator when speaking */}
+                {isSpeaking ? (
+                  <div className="flex items-center gap-1.5 mt-3 bg-purple-500/10 border border-purple-500/30 px-3.5 py-1 rounded-full relative z-10 shadow-md">
+                    <span className="text-[11px] text-cyan-300 font-bold uppercase tracking-wider">
+                      Speaking Live
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                      <span className="w-1 h-5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-1 h-2 bg-pink-400 rounded-full animate-bounce" />
+                      <span className="w-1 h-4 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.25s]" />
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Interactive Question Buttons */}
-            <div className="space-y-2 pt-2">
-              <p className="text-xs text-purple-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Tap a question to hear SparkBot answer aloud:</span>
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {explainTopics.map((item, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelectTopic(item)}
-                    className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-purple-600/90 border border-slate-700/80 hover:border-purple-400 text-left transition-all hover:scale-[1.02] active:scale-95 shadow-sm group"
-                  >
-                    <div className="text-xs font-bold text-white group-hover:text-white flex items-center justify-between">
-                      <span>{item.title}</span>
-                      <Play className="w-3 h-3 text-cyan-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                    <div className="text-[11px] text-slate-400 group-hover:text-purple-200 truncate mt-0.5">
-                      {item.subtitle}
-                    </div>
-                  </button>
-                ))}
+                ) : (
+                  <span className="text-[11px] text-slate-500 group-hover:text-cyan-400 transition-colors mt-2 font-mono">
+                    ✦ Click robot to speak
+                  </span>
+                )}
               </div>
             </div>
 
             {/* Voice & Custom Ask Input Bar */}
-            <form onSubmit={handleAskQuestion} className="pt-4 flex items-center gap-2">
+            <form onSubmit={handleAskQuestion} className="pt-3 flex items-center gap-2 border-t border-slate-800/80">
               <div className="relative flex-1">
                 <input
                   type="text"
                   value={customQuery}
                   onChange={(e) => setCustomQuery(e.target.value)}
-                  placeholder="Ask SparkBot anything about Revathi..."
+                  placeholder="Ask SparkBot anything about Revathi (skills, projects, experience)..."
                   className="w-full bg-slate-950/90 border border-slate-800 focus:border-purple-500 rounded-xl pl-3.5 pr-10 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 outline-none transition-colors"
                 />
                 <button
@@ -673,14 +497,13 @@ export default function Terminal() {
                 <Send className="w-3.5 h-3.5" />
               </button>
             </form>
-
           </div>
 
           {/* ==================================================== */}
           {/* RIGHT COLUMN: Developer CLI Simulator               */}
           {/* ==================================================== */}
           <div className="lg:col-span-6 flex flex-col bg-slate-900/90 border-2 border-slate-800 hover:border-slate-700 rounded-3xl shadow-2xl overflow-hidden font-mono text-xs sm:text-sm backdrop-blur-md transition-all duration-300">
-            
+
             {/* Title Bar */}
             <div className="bg-slate-950/90 px-5 py-4 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
