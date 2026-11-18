@@ -61,19 +61,20 @@ export const metadata: Metadata = {
       'Senior Technical Lead & Full-Stack Architect with 10+ years of proven delivery across enterprise ERP, video streaming, recruitment platforms, and scalable web solutions.',
     images: [
       {
-        url: '/profile.jpg',
-        width: 1200,
-        height: 630,
+        url: 'https://revathi.tech/profile.jpg',
+        width: 400,
+        height: 400,
         alt: 'Revathi K. - Technical Lead & Full-Stack Architect',
+        type: 'image/jpeg',
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: 'Revathi K. | Technical Lead & Full-Stack Architect',
     description:
       '10+ years driving web application development, developer mentorship, QA coordination, and client delivery.',
-    images: ['/profile.jpg'],
+    images: ['https://revathi.tech/profile.jpg'],
   },
   robots: {
     index: true,
@@ -101,7 +102,15 @@ const jsonLd = {
       description:
         'Senior Technical Lead with 10+ years of proven delivery across web application engineering, developer & QA leadership, and scalable platforms in ERP, recruitment, video streaming, and mobility.',
       url: 'https://revathi.tech',
-      image: 'https://revathi.tech/profile.jpg',
+      image: {
+        '@type': 'ImageObject',
+        '@id': 'https://revathi.tech/#profileImage',
+        url: 'https://revathi.tech/profile.jpg',
+        contentUrl: 'https://revathi.tech/profile.jpg',
+        caption: 'Revathi K. - Technical Lead & Full-Stack Architect',
+        width: 400,
+        height: 400,
+      },
       email: 'mailto:revathimss7@gmail.com',
       telephone: '+919994157428',
       address: {
@@ -152,6 +161,9 @@ const jsonLd = {
       },
       mainEntity: {
         '@id': 'https://revathi.tech/#person',
+      },
+      primaryImageOfPage: {
+        '@id': 'https://revathi.tech/#profileImage',
       },
     },
   ],
