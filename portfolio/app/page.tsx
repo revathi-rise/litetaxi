@@ -13,6 +13,7 @@ import Terminal from '@/components/Terminal';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import ResumeModal from '@/components/ResumeModal';
+import WhatsAppButton from '@/components/WhatsAppButton';
 
 export default function Home() {
   const [resumeOpen, setResumeOpen] = useState(false);
@@ -60,6 +61,9 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Floating WhatsApp Quick Connect Button */}
+      <WhatsAppButton />
 
       {/* Full Resume Modal */}
       <ResumeModal isOpen={resumeOpen} onClose={() => setResumeOpen(false)} />

@@ -81,11 +81,11 @@ export default function Footer() {
 
       </div>
 
-      {/* Floating Back to Top Button */}
+      {/* Floating Back to Top Button (Stacked above WhatsApp) */}
       {showTopBtn && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-xl bg-slate-900 border border-purple-500/40 text-purple-400 flex items-center justify-center shadow-xl hover:bg-purple-600 hover:text-white transition-all animate-in fade-in"
+          className="fixed bottom-[88px] right-7 z-40 w-11 h-11 rounded-xl bg-slate-900/90 border border-purple-500/40 text-purple-400 flex items-center justify-center shadow-2xl backdrop-blur-md hover:bg-purple-600 hover:text-white transition-all animate-in fade-in active:scale-95"
           title="Back to Top"
           aria-label="Back to Top"
         >
