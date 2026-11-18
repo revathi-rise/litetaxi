@@ -202,27 +202,6 @@ export default function Terminal() {
   );
   const [customQuery, setCustomQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const robotContainerRef = useRef<HTMLDivElement>(null);
-
-  // Track mouse coordinates so the 3D robot tilts and looks directly at the client
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!robotContainerRef.current) return;
-      const rect = robotContainerRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      const dx = Math.max(-1, Math.min(1, (e.clientX - centerX) / (window.innerWidth / 2.5)));
-      const dy = Math.max(-1, Math.min(1, (e.clientY - centerY) / (window.innerHeight / 2.5)));
-
-      setMousePos({ x: dx, y: dy });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   // Text-To-Speech Function (System Speakers)
   const speakAloud = (text: string) => {
@@ -522,48 +501,34 @@ export default function Terminal() {
                 </p>
               </div>
 
-              {/* The 3D Standing Robot - Seamlessly Merged with Background & Tracks Client Cursor */}
+              {/* The 3D Standing Robot - Seamlessly Merged with Background (Static & Stable, No Hover Movement) */}
               <div
-                ref={robotContainerRef}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
                 onClick={() =>
                   speakAloud(
                     "Hello! I am SparkBot, Revathi's AI assistant. Ask me anything below about her experience, skills, or projects!"
                   )
                 }
                 title="Click to hear SparkBot introduce Revathi"
-                className="relative w-full max-w-[340px] sm:max-w-[380px] mx-auto flex flex-col items-center justify-center my-auto py-2 group cursor-pointer select-none"
-                style={{ perspective: '1000px' }}
+                className="relative w-full max-w-[340px] sm:max-w-[380px] mx-auto flex flex-col items-center justify-center my-auto py-2 cursor-pointer select-none"
               >
                 {/* 100% Seamless Ambient Aura (No hard borders or square box) */}
                 <div
                   className={`absolute inset-0 rounded-full blur-3xl pointer-events-none transition-all duration-700 ${
                     isSpeaking
-                      ? 'bg-gradient-to-tr from-cyan-500/30 via-purple-600/35 to-pink-500/25 scale-110 opacity-90'
-                      : isHovered
-                      ? 'bg-gradient-to-tr from-cyan-500/25 via-purple-600/25 to-transparent scale-105 opacity-75'
-                      : 'bg-gradient-to-tr from-cyan-500/15 via-purple-600/15 to-transparent scale-95 opacity-50'
+                      ? 'bg-gradient-to-tr from-cyan-500/25 via-blue-600/30 to-purple-500/20 opacity-90'
+                      : 'bg-gradient-to-tr from-cyan-500/15 via-blue-600/15 to-transparent opacity-50'
                   }`}
                 />
 
-                {/* 3D Tilted Interactive Robot with Radial Edge Feathering */}
-                <div
-                  className="relative transition-transform duration-200 ease-out flex flex-col items-center justify-center w-full"
-                  style={{
-                    transform: `perspective(900px) rotateY(${mousePos.x * 14}deg) rotateX(${-mousePos.y * 10}deg) scale(${
-                      isHovered || isSpeaking ? 1.04 : 1
-                    })`,
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
+                {/* Grounded 3D Robot Image (Merged with background, no movement on hover) */}
+                <div className="relative flex flex-col items-center justify-center w-full">
                   <img
                     src="/robot.png"
                     alt="SparkBot AI Assistant"
-                    className="w-full h-auto max-h-[300px] object-contain drop-shadow-[0_20px_35px_rgba(112,26,117,0.4)] transition-all duration-300 relative z-10"
+                    className="w-full h-auto max-h-[320px] object-contain drop-shadow-[0_20px_40px_rgba(37,99,235,0.35)] relative z-10"
                     style={{
-                      maskImage: 'radial-gradient(ellipse 92% 92% at 50% 50%, black 72%, transparent 100%)',
-                      WebkitMaskImage: 'radial-gradient(ellipse 92% 92% at 50% 50%, black 72%, transparent 100%)',
+                      maskImage: 'radial-gradient(ellipse 94% 94% at 50% 50%, black 75%, transparent 100%)',
+                      WebkitMaskImage: 'radial-gradient(ellipse 94% 94% at 50% 50%, black 75%, transparent 100%)',
                     }}
                   />
 
@@ -581,9 +546,9 @@ export default function Terminal() {
                       </div>
                     </div>
                   ) : (
-                    <span className="text-[11px] text-slate-500 group-hover:text-cyan-400 transition-colors mt-2 font-mono flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                      <span>✦ Move mouse to interact • Click to speak</span>
+                    <span className="text-[11px] text-slate-500 hover:text-cyan-400 transition-colors mt-2 font-mono flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                      <span>✦ Click robot to speak</span>
                     </span>
                   )}
                 </div>
