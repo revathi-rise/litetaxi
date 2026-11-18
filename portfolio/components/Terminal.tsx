@@ -11,6 +11,7 @@ import {
   Send,
   Square,
 } from 'lucide-react';
+import InteractiveRobot from './InteractiveRobot';
 
 interface HistoryItem {
   command: string;
@@ -424,46 +425,15 @@ export default function Terminal() {
                 </p>
               </div>
 
-              {/* The 3D Standing Cyber Robot Image */}
-              <div
+              {/* Interactive Cyber Robot: Seamlessly merged with background, tracks client cursor, moves head & hands */}
+              <InteractiveRobot
+                isSpeaking={isSpeaking}
                 onClick={() =>
                   speakAloud(
                     "Hello! I am SparkBot, Revathi's AI assistant. Ask me anything below about her experience, skills, or projects!"
                   )
                 }
-                title="Click to hear SparkBot introduce Revathi"
-                className="relative w-full max-w-[320px] sm:max-w-[360px] mx-auto flex flex-col items-center justify-center my-auto py-2 group cursor-pointer"
-              >
-                {/* Ambient glow behind robot */}
-                <div className={`absolute inset-0 bg-cyan-500/10 rounded-2xl blur-xl transition-opacity duration-500 ${isSpeaking ? 'opacity-100 bg-purple-600/20' : 'opacity-40 group-hover:opacity-75'}`} />
-
-                <img
-                  src="/robot.jpg"
-                  alt="SparkBot AI Assistant"
-                  className={`w-full h-auto max-h-[300px] object-contain rounded-2xl shadow-2xl shadow-purple-950/50 transition-all duration-500 relative z-10 ${
-                    isSpeaking ? 'scale-105 ring-2 ring-cyan-400/60 shadow-cyan-500/30' : 'group-hover:scale-102'
-                  }`}
-                />
-
-                {/* Soundwave equalizer indicator when speaking */}
-                {isSpeaking ? (
-                  <div className="flex items-center gap-1.5 mt-3 bg-purple-500/10 border border-purple-500/30 px-3.5 py-1 rounded-full relative z-10 shadow-md">
-                    <span className="text-[11px] text-cyan-300 font-bold uppercase tracking-wider">
-                      Speaking Live
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="w-1 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-1 h-5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-1 h-2 bg-pink-400 rounded-full animate-bounce" />
-                      <span className="w-1 h-4 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.25s]" />
-                    </div>
-                  </div>
-                ) : (
-                  <span className="text-[11px] text-slate-500 group-hover:text-cyan-400 transition-colors mt-2 font-mono">
-                    ✦ Click robot to speak
-                  </span>
-                )}
-              </div>
+              />
             </div>
 
             {/* Voice & Custom Ask Input Bar */}
